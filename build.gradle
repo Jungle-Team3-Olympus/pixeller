@@ -1,0 +1,85 @@
+buildscript {
+    ext {
+        projectName = 'jungle-board'
+        projectVersion = '1.0.0'
+        spotlessVersion = '6.8.0'
+        asciidoctorVersion = '3.3.2'
+        epagesRestDocsApiSpecVersion = '0.16.0'
+        sonarqubeVersion = '4.4.1.3373'
+    }
+}
+
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.0'
+    id 'io.spring.dependency-management' version '1.1.5'
+
+    id "com.diffplug.spotless" version "${spotlessVersion}"
+
+    id 'org.asciidoctor.jvm.convert' version "${asciidoctorVersion}"
+    id 'com.epages.restdocs-api-spec' version "${epagesRestDocsApiSpecVersion}"
+
+    id "org.sonarqube" version "${sonarqubeVersion}"
+    id 'jacoco'
+}
+
+group = 'com.jungle'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+}
+
+/** apply tasks */
+apply from: './tasks/formatting-task.gradle'
+apply from: './tasks/code-quality-task.gradle'
+apply from: './tasks/docs-task.gradle'
+apply from: './tasks/install-git-hooks.gradle'
+apply from: './tasks/integration-test.gradle'
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // datbase
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+}
+
+tasks.named('asciidoctor') {
+    inputs.dir snippetsDir
+    dependsOn test
+}

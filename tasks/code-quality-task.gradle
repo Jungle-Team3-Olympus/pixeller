@@ -1,0 +1,84 @@
+apply plugin: 'org.asciidoctor.jvm.convert'
+apply plugin: 'com.epages.restdocs-api-spec'
+apply plugin: 'org.sonarqube'
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+def jacocoDir = layout.buildDirectory.dir("reports/")
+
+def jacocoExcludePatterns = [
+        "test/BoardApplicationTests.class",
+        "**/*Config*",
+        "**/*Exception*",
+        "**/*Request*",
+        "**/*Response*",
+        "**/*Dto*",
+        "**/*Interceptor*",
+        "**/*Filter*",
+        "**/*Resolver*",
+        "**/*Entity*",
+        "**/resources/**"
+]
+
+def QDomains = []
+for (qPattern in '*.QA'..'*.QZ') {
+    QDomains.add(qPattern + '*')
+}
+
+sonar {
+    properties {
+        property "sonar.projectKey", "kssumin_week13-board"
+        property "sonar.organization", "jungle-board"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property 'sonar.sources', 'src'
+        property 'sonar.language', 'java'
+        property 'sonar.sourceEncoding', 'UTF-8'
+        property 'sonar.test.exclusions', jacocoExcludePatterns.join(',')
+        property 'sonar.test.inclusions', '**/*Test.java'
+        property 'sonar.java.coveragePlugin', 'jacoco'
+        property 'sonar.coverage.jacoco.xmlReportPaths', jacocoDir.get().file("jacoco/index.xml").asFile
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(true)
+        html.destination jacocoDir.get().file("jacoco/index.html").asFile
+        xml.destination jacocoDir.get().file("jacoco/index.xml").asFile
+        csv.destination jacocoDir.get().file("jacoco/index.csv").asFile
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, excludes: jacocoExcludePatterns + QDomains) // Querydsl 관련 제거
+                })
+        )
+    }
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestCoverageVerification {
+
+    violationRules {
+        rule {
+            enabled = true
+
+            // 클래스 단위로 룰 체크
+            element = 'CLASS'
+
+            excludes = jacocoExcludePatterns + QDomains
+        }
+    }
+}
