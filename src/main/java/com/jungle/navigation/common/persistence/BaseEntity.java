@@ -3,7 +3,7 @@ package com.jungle.navigation.common.persistence;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,11 +24,11 @@ public class BaseEntity {
 
 	@CreatedDate
 	@Column(nullable = false, updatable = false)
-	private Timestamp createdDate;
+	private LocalDateTime createdDate;
 
 	@LastModifiedDate
 	@Column(nullable = false)
-	private Timestamp updatedDate;
+	private LocalDateTime updatedDate;
 
 	@Builder.Default
 	@Column(nullable = false)
