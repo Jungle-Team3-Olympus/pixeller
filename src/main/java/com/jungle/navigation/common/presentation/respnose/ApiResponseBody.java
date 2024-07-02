@@ -1,4 +1,4 @@
-package com.blackcompany.eeos.common.presentation.respnose;
+package com.jungle.navigation.common.presentation.respnose;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ public class ApiResponseBody {
 	@AllArgsConstructor
 	public static class FailureBody implements Serializable {
 
-		private String status;
+		private boolean isSuccess;
 		private String code;
 		private String message;
 	}
@@ -17,8 +17,9 @@ public class ApiResponseBody {
 	@Getter
 	@AllArgsConstructor
 	public static class SuccessBody<D> implements Serializable {
+		private boolean isSuccess;
+		private String code;
 		private D data;
 		private String message;
-		private String code;
 	}
 }
