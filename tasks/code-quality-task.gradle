@@ -62,7 +62,7 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(
                 files(classDirectories.files.collect {
-                    fileTree(dir: it, excludes: jacocoExcludePatterns + QDomains) // Querydsl 관련 제거
+                    fileTree(dir: it, excludes: jacocoExcludePatterns + QDomains)
                 })
         )
     }
@@ -70,7 +70,6 @@ jacocoTestReport {
 }
 
 jacocoTestCoverageVerification {
-
     violationRules {
         rule {
             enabled = true
@@ -80,5 +79,12 @@ jacocoTestCoverageVerification {
 
             excludes = jacocoExcludePatterns + QDomains
         }
+    }
+}
+
+tasks.named('sonarqube') {
+    dependsOn(tasks.named('classes'))
+    doFirst {
+        project.ext.set("sonar.gradle.skipCompile", "true")
     }
 }
