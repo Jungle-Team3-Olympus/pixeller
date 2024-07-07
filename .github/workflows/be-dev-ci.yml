@@ -11,6 +11,12 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      CORS_URL: ${{ secrets.CORS_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     strategy:
       matrix:
         java-version: [ 17 ]
