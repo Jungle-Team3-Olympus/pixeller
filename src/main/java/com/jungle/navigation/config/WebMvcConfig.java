@@ -1,8 +1,7 @@
-package com.blackcompany.eeos.config;
+package com.jungle.navigation.config;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -15,14 +14,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Slf4j
 public class WebMvcConfig implements WebMvcConfigurer {
 	private static final long MAX_AGE_SECS = 3600;
-	private final List<String> allowOriginUrlPatterns;
+	private List<String> allowOriginUrlPatterns;
 	public static final String ALLOWED_METHOD_NAMES = "GET,HEAD,POST,PUT,DELETE,TRACE,OPTIONS,PATCH";
 
 	public WebMvcConfig(@Value("${cors.allow-origin.urls}") final String allowOriginUrlPatterns) {
 		this.allowOriginUrlPatterns =
-				Arrays.stream(allowOriginUrlPatterns.split(","))
-						.map(String::trim)
-						.collect(Collectors.toList());
+				Arrays.stream(allowOriginUrlPatterns.split(",")).map(String::trim).toList();
 	}
 
 	@Override
@@ -30,10 +27,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		String[] patterns = allowOriginUrlPatterns.toArray(String[]::new);
 
 		registry
-				.addMapping("/api/**")
+				.addMapping("/**")
 				.allowedOriginPatterns(patterns)
 				.allowedMethods(ALLOWED_METHOD_NAMES.split(","))
-				.exposedHeaders("Authorization", "Set-Cookie")
+				.exposedHeaders("Authorization")
 				.allowCredentials(true)
 				.maxAge(MAX_AGE_SECS);
 	}
