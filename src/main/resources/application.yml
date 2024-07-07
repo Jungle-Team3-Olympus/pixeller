@@ -1,7 +1,3 @@
 spring:
   profiles:
-    group:
-      local:
-        - local-mysql
-        - api
-    active: local
+    active: dev
