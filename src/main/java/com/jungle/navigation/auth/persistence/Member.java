@@ -6,9 +6,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -31,7 +32,8 @@ public class Member extends BaseEntity {
 	@Column(name = "id", nullable = false, length = 50)
 	private String nickname;
 
-	@Column(name = "user_type", nullable = false, columnDefinition = "char(1) default 'U'")
+	@Column(name = "user_type", nullable = false)
+	@Builder.Default
 	private char userType = 'U';
 
 	@Column(name = "x")
@@ -40,11 +42,8 @@ public class Member extends BaseEntity {
 	@Column(name = "y")
 	private Float y;
 
-	@Column(
-			name = "joined_at",
-			nullable = false,
-			columnDefinition = "datetime(6) default current_timestamp(6)")
-	private LocalDateTime joinedAt = LocalDateTime.now();
+	@Column(name = "joined_at")
+	private Timestamp joinedAt;
 
 	@Column(name = "pw", length = 200)
 	private String password;
