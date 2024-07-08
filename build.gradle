@@ -6,6 +6,10 @@ buildscript {
         asciidoctorVersion = '3.3.2'
         epagesRestDocsApiSpecVersion = '0.16.0'
         sonarqubeVersion = '4.4.1.3373'
+
+        asciidoctorVersion = '3.3.2'
+        epagesRestDocsApiSpecVersion = '0.16.0'
+        swaggerUIVersion = '4.11.1'
     }
 }
 
@@ -22,6 +26,8 @@ plugins {
 
     id "org.sonarqube" version "${sonarqubeVersion}"
     id 'jacoco'
+
+    id 'org.hidetake.swagger.generator' version '2.18.2'
 }
 
 group = 'com.jungle'
@@ -80,6 +86,12 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // swagger
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation "com.epages:restdocs-api-spec-mockmvc:${epagesRestDocsApiSpecVersion}"
+    swaggerUI "org.webjars:swagger-ui:${swaggerUIVersion}"
 }
 
 tasks.named('test') {
