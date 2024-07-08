@@ -1,0 +1,25 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:mysql://localhost:13306/navigation_jungle?useSSL=false&serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    generate-ddl: false
+    open-in-view: false
+cors:
+  allow-origin:
+    urls: ${CORS_URL}
+jwt:
+  secretKey: ${JWT_SECRET}

@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   demo-mysql:
-    container_name: board-mysql8
+    container_name: navigation-mysql8
     image: mysql/mysql-server:8.0.27
     environment:
       - MYSQL_ROOT_PASSWORD=root
@@ -14,7 +14,7 @@ services:
       - ./mysql-init.d:/docker-entrypoint-initdb.d
 
   demo-adminer: # mysql web admin
-    container_name: board-adminer
+    container_name: navigation-adminer
     image: adminer:4
     ports:
       - "18080:8080"
