@@ -1,9 +1,7 @@
-package com.jungle.navigation.chat.domain;
+package com.jungle.navigation.chat.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,20 +19,18 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = ChatRoom.PREFIX)
-public class ChatRoom {
-	public static final String PREFIX = "room";
+@Table(name = RoomMember.PREFIX)
+public class RoomMember {
+	public static final String PREFIX = "room_member";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = ChatRoom.PREFIX + "_id")
+	@Column(name = RoomMember.PREFIX + "_id")
 	private Long id;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "room_type", nullable = false)
-	private RoomType roomType;
+	@Column(name = "user_id")
+	private Long memberId;
 
-	public static ChatRoom of(RoomType roomType) {
-		return ChatRoom.builder().roomType(roomType).build();
-	}
+	@Column(name = "room_id")
+	private Long chatRoomId;
 }

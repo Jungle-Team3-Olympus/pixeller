@@ -1,4 +1,4 @@
-package com.jungle.navigation.chat.domain;
+package com.jungle.navigation.chat.support;
 
 public class WebSocketConstant {
 	public static final String SUBSCRIBE = "/sub";

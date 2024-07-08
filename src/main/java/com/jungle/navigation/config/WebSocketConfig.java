@@ -1,8 +1,8 @@
 package com.jungle.navigation.config;
 
-import static com.jungle.navigation.chat.domain.WebSocketConstant.CONNECT;
-import static com.jungle.navigation.chat.domain.WebSocketConstant.PUBLISH;
-import static com.jungle.navigation.chat.domain.WebSocketConstant.SUBSCRIBE;
+import static com.jungle.navigation.chat.support.WebSocketConstant.CONNECT;
+import static com.jungle.navigation.chat.support.WebSocketConstant.PUBLISH;
+import static com.jungle.navigation.chat.support.WebSocketConstant.SUBSCRIBE;
 
 import com.jungle.navigation.chat.presentation.support.StompInterceptor;
 import java.util.Arrays;

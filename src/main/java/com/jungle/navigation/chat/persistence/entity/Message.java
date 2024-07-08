@@ -1,4 +1,4 @@
-package com.jungle.navigation.chat.domain;
+package com.jungle.navigation.chat.persistence.entity;
 
 import com.jungle.navigation.common.persistence.BaseEntity;
 import jakarta.persistence.Column;
