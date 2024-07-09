@@ -23,7 +23,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = ChatRoom.PREFIX)
 public class ChatRoom {
-	public static final String PREFIX = "room";
+	public static final String PREFIX = "chat_room";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
