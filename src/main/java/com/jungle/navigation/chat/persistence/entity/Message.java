@@ -43,6 +43,6 @@ public class Message extends BaseEntity {
 	private String content;
 
 	@Builder.Default
-	@Column(name = "created_at")
+	@Column(name = "send_time")
 	private LocalDateTime sendTime = LocalDateTime.now();
 }
