@@ -1,7 +1,7 @@
 FROM openjdk:17-oracle
 RUN mkdir -p /logs
 
-ENV	PROFILE defaultgi
+ENV	PROFILE=defaultgi
 ENV TZ=Asia/Seoul
 
 ARG JAVA_OPTS
