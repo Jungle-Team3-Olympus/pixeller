@@ -11,4 +11,4 @@ ENV DD_VERSION=${RELEASE_VERSION}
 
 ARG JAR_FILE="./build/libs/*.jar"
 COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar","-Dspring.profiles.active=dev", "/app.jar"]
