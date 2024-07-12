@@ -5,7 +5,6 @@ import com.jungle.navigation.chat.persistence.entity.ChatRoom;
 import com.jungle.navigation.chat.persistence.entity.RoomType;
 import com.jungle.navigation.chat.presentation.dto.request.CreateDirectRoomRequest;
 import com.jungle.navigation.chat.presentation.dto.response.CreateRoomResponse;
-import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
 import com.jungle.navigation.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,14 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RoomService {
-	private static final String WELCOME_MESSAGE = " 님이 입장하였습니다.";
 
 	private final ChatRoomRepository chatRoomRepository;
-
-	public MessageResponse joinRoom(String memberName) {
-
-		return MessageResponse.of(1L, memberName, memberName + WELCOME_MESSAGE);
-	}
 
 	@Transactional
 	public CreateRoomResponse createDirectRoom(Long senderId, CreateDirectRoomRequest request) {
