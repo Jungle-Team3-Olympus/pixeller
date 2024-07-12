@@ -22,14 +22,13 @@ public class ApiResponseGenerator {
 				new SuccessBody<>(true, code.getCode(), data, code.getMessage()), status);
 	}
 
-	public static ApiResponse<FailureBody> fail(final MessageCode code, final HttpStatus status) {
-		return new ApiResponse<>(new FailureBody(false, code.getCode(), code.getMessage()), status);
+	public static ApiResponse<FailureBody> fail(final String message, final HttpStatus status) {
+		return new ApiResponse<>(new FailureBody(false, message), status);
 	}
 
 	public static ApiResponse<FailureBody> fail(
-			BindingResult bindingResult, final String code, final HttpStatus status) {
-		return new ApiResponse<>(
-				new FailureBody(false, code, createErrorMessage(bindingResult)), status);
+			BindingResult bindingResult, final HttpStatus status) {
+		return new ApiResponse<>(new FailureBody(false, createErrorMessage(bindingResult)), status);
 	}
 
 	private static String createErrorMessage(BindingResult bindingResult) {

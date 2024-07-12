@@ -10,7 +10,6 @@ public class ApiResponseBody {
 	public static class FailureBody implements Serializable {
 
 		private boolean isSuccess;
-		private String code;
 		private String message;
 	}
 
