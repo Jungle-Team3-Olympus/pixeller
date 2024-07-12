@@ -15,9 +15,10 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoom, Long>, Ch
 	}
 
 	default void validateById(Long id) {
-		if (!existsById(id)) {
-			throw new BusinessException("존재하지 않는 채팅방입니다.");
+		if (existsById(id)) {
+			return;
 		}
+		throw new BusinessException("존재하지 않는 채팅방입니다.");
 	}
 
 	@Query(
