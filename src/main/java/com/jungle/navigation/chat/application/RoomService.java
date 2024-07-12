@@ -6,6 +6,7 @@ import com.jungle.navigation.chat.persistence.entity.RoomType;
 import com.jungle.navigation.chat.presentation.dto.request.CreateDirectRoomRequest;
 import com.jungle.navigation.chat.presentation.dto.response.CreateRoomResponse;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
+import com.jungle.navigation.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,14 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RoomService {
-	private static final String sender = "관리자";
 	private static final String WELCOME_MESSAGE = " 님이 입장하였습니다.";
 
 	private final ChatRoomRepository chatRoomRepository;
 
 	public MessageResponse joinRoom(String memberName) {
 
-		return MessageResponse.of(1L, sender, memberName + WELCOME_MESSAGE);
+		return MessageResponse.of(1L, memberName, memberName + WELCOME_MESSAGE);
 	}
 
 	@Transactional
@@ -30,7 +30,7 @@ public class RoomService {
 				chatRoomRepository.findCommonChatRoom(senderId, request.receiverId(), RoomType.DIRECT);
 
 		if (commonChatRoom == null) {
-			throw new IllegalArgumentException("이미 두 유저간의 채팅방이 존재합니다.");
+			throw new BusinessException("이미 두 유저간의 채팅방이 존재합니다.");
 		}
 
 		ChatRoom chatRoom = chatRoomRepository.save(toEntity());

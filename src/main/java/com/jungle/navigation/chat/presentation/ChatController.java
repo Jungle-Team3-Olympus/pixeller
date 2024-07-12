@@ -19,11 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ChatController {
 	private static final String PUBLIC_ROOM_UUID = "1";
+	private static final String WELCOME_MESSAGE = "님이 입장했습니다.";
+	private static final String SUB_PUBLIC_ROOM = SUBSCRIBE + "/message/" + PUBLIC_ROOM_UUID;
 
 	private final ChatService chatService;
 	private final SessionManager sessionManager;
 
 	private final SimpMessageSendingOperations messagingTemplate;
+
+	@MessageMapping("/message/" + PUBLIC_ROOM_UUID + "/enter")
+	public void sendWelcomeMessage(SimpMessageHeaderAccessor headerAccessor) {
+		String enterName = sessionManager.getValue(headerAccessor, MEMBER_NAME, String.class);
+		messagingTemplate.convertAndSend(SUB_PUBLIC_ROOM, enterName + WELCOME_MESSAGE);
+	}
 
 	@MessageMapping("/message/" + PUBLIC_ROOM_UUID)
 	public void sendPublicMessage(
@@ -36,7 +44,7 @@ public class ChatController {
 				chatService.createPublicMessage(
 						senderId, senderName, Long.valueOf(PUBLIC_ROOM_UUID), request);
 
-		messagingTemplate.convertAndSend(SUBSCRIBE + "/message/" + PUBLIC_ROOM_UUID, response);
+		messagingTemplate.convertAndSend(SUB_PUBLIC_ROOM, response);
 	}
 
 	@MessageMapping("/message/direct")
