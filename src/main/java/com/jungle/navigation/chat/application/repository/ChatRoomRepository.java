@@ -10,4 +10,6 @@ public interface ChatRoomRepository {
 	ChatRoom save(ChatRoom room);
 
 	ChatRoom findCommonChatRoom(Long senderId, Long receiverId, RoomType roomType);
+
+	void validateById(Long id);
 }

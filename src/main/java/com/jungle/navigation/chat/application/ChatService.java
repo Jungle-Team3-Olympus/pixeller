@@ -4,10 +4,8 @@ import com.jungle.navigation.chat.application.repository.ChatRoomRepository;
 import com.jungle.navigation.chat.application.repository.MessageRepository;
 import com.jungle.navigation.chat.persistence.entity.ChatRoom;
 import com.jungle.navigation.chat.persistence.entity.Message;
-import com.jungle.navigation.chat.persistence.entity.RoomType;
 import com.jungle.navigation.chat.presentation.dto.request.SendMessageRequest;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
-import com.jungle.navigation.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +29,11 @@ public class ChatService {
 
 	@Transactional
 	public MessageResponse createDirectMessage(
-			Long senderId, String senderName, Long receiverId, SendMessageRequest request) {
-		ChatRoom chatRoom = getChatRoom(senderId, receiverId, RoomType.DIRECT);
-		saveMessage(chatRoom.getId(), request, senderId);
+			Long senderId, String senderName, Long roomId, SendMessageRequest request) {
+		validateExistChatRoom(roomId);
+		saveMessage(roomId, request, senderId);
 
-		return MessageResponse.of(chatRoom.getId(), senderName, request.content());
+		return MessageResponse.of(roomId, senderName, request.content());
 	}
 
 	private void saveMessage(Long roomId, SendMessageRequest request, Long memberId) {
@@ -48,13 +46,7 @@ public class ChatService {
 		return Message.builder().roomId(roomId).senderId(memberId).content(request.content()).build();
 	}
 
-	private ChatRoom getChatRoom(Long senderId, Long receiverId, RoomType roomType) {
-		ChatRoom commonChatRoom = chatRoomRepository.findCommonChatRoom(senderId, receiverId, roomType);
-
-		if (commonChatRoom == null) {
-			throw new BusinessException("상대방과의 채팅방이 존재하지 않습니다.");
-		}
-
-		return commonChatRoom;
+	private void validateExistChatRoom(Long roomId) {
+		chatRoomRepository.validateById(roomId);
 	}
 }

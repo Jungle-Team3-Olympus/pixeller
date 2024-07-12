@@ -3,6 +3,7 @@ package com.jungle.navigation.chat.persistence;
 import com.jungle.navigation.chat.application.repository.ChatRoomRepository;
 import com.jungle.navigation.chat.persistence.entity.ChatRoom;
 import com.jungle.navigation.chat.persistence.entity.RoomType;
+import com.jungle.navigation.common.exception.BusinessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +11,13 @@ import org.springframework.data.repository.query.Param;
 public interface ChatRoomJpaRepository extends JpaRepository<ChatRoom, Long>, ChatRoomRepository {
 
 	default ChatRoom getById(Long id) {
-		return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
+		return findById(id).orElseThrow(() -> new BusinessException("존재하지 않는 방입니다."));
+	}
+
+	default void validateById(Long id) {
+		if (!existsById(id)) {
+			throw new BusinessException("존재하지 않는 채팅방입니다.");
+		}
 	}
 
 	@Query(
