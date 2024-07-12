@@ -1,6 +1,7 @@
 package com.jungle.navigation.chat.presentation;
 
 import com.jungle.navigation.auth.presentation.support.Member;
+import com.jungle.navigation.auth.presentation.support.MemberInfo;
 import com.jungle.navigation.chat.application.RoomService;
 import com.jungle.navigation.chat.presentation.dto.request.CreateDirectRoomRequest;
 import com.jungle.navigation.chat.presentation.dto.response.CreateRoomResponse;
@@ -25,13 +26,13 @@ public class RoomController {
 	/**
 	 * direct chat을 생성
 	 *
-	 * @param memberId
+	 * @param memberInfo
 	 * @param request 상대방의 member 정보를 전달
 	 */
 	@PostMapping("/api/chat/direct")
 	public ApiResponse<SuccessBody<CreateRoomResponse>> joinDirectRoom(
-			@Member Long memberId, @RequestBody CreateDirectRoomRequest request) {
-		CreateRoomResponse response = roomService.createDirectRoom(memberId, request);
+			@Member MemberInfo memberInfo, @RequestBody CreateDirectRoomRequest request) {
+		CreateRoomResponse response = roomService.createDirectRoom(memberInfo.getMemberId(), request);
 		return ApiResponseGenerator.success(
 				response, HttpStatus.OK, RoomSuccessMessageCode.CREATE_ROOM);
 	}
