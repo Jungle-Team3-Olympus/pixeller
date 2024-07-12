@@ -5,7 +5,6 @@ import com.jungle.navigation.chat.application.RoomService;
 import com.jungle.navigation.chat.presentation.dto.request.CreateDirectRoomRequest;
 import com.jungle.navigation.chat.presentation.dto.response.CreateRoomResponse;
 import com.jungle.navigation.chat.presentation.support.RoomSuccessMessageCode;
-import com.jungle.navigation.chat.presentation.support.SessionManager;
 import com.jungle.navigation.common.presentation.respnose.ApiResponse;
 import com.jungle.navigation.common.presentation.respnose.ApiResponseBody.SuccessBody;
 import com.jungle.navigation.common.presentation.respnose.ApiResponseGenerator;
@@ -20,10 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class RoomController {
-	private static final String PUBLIC_ROOM_UUID = "1L";
 
 	private final RoomService roomService;
-	private final SessionManager sessionManager;
 
 	/**
 	 * direct chat을 생성
