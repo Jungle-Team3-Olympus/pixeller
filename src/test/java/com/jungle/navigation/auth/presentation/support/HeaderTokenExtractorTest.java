@@ -3,6 +3,7 @@ package com.jungle.navigation.auth.presentation.support;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+import com.jungle.navigation.common.exception.BusinessException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,7 @@ class HeaderTokenExtractorTest {
 		when(request.getHeader(AUTHORIZATION)).thenReturn(null);
 
 		// when & then
-		assertThrows(IllegalArgumentException.class, () -> headerTokenExtractor.extract(request));
+		assertThrows(BusinessException.class, () -> headerTokenExtractor.extract(request));
 	}
 
 	@Test
