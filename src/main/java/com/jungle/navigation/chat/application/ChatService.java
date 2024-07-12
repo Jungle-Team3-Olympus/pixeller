@@ -7,6 +7,7 @@ import com.jungle.navigation.chat.persistence.entity.Message;
 import com.jungle.navigation.chat.persistence.entity.RoomType;
 import com.jungle.navigation.chat.presentation.dto.request.SendMessageRequest;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
+import com.jungle.navigation.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,7 @@ public class ChatService {
 		ChatRoom commonChatRoom = chatRoomRepository.findCommonChatRoom(senderId, receiverId, roomType);
 
 		if (commonChatRoom == null) {
-			throw new IllegalStateException("상대방과의 채팅방이 존재하지 않습니다.");
+			throw new BusinessException("상대방과의 채팅방이 존재하지 않습니다.");
 		}
 
 		return commonChatRoom;
