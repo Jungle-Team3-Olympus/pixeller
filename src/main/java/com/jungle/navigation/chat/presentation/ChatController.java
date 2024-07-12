@@ -36,7 +36,8 @@ public class ChatController {
 	@MessageMapping("/message/" + PUBLIC_ROOM_UUID + "/enter")
 	public void sendWelcomeMessage(SimpMessageHeaderAccessor headerAccessor) {
 		String enterName = sessionManager.getValue(headerAccessor, MEMBER_NAME, String.class);
-		messagingTemplate.convertAndSend(SUB_PUBLIC_ROOM, enterName + WELCOME_MESSAGE);
+		MessageResponse response = MessageResponse.of(1L, enterName, WELCOME_MESSAGE);
+		messagingTemplate.convertAndSend(SUB_PUBLIC_ROOM, response);
 	}
 
 	/**
