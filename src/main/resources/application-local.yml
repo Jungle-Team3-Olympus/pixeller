@@ -23,3 +23,7 @@ cors:
     urls: ${CORS_URL}
 jwt:
   secretKey: ${JWT_SECRET}
+
+slack:
+  webhook:
+    url: fakeslackurl

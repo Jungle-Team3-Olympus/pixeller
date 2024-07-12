@@ -22,3 +22,7 @@ cors:
     urls: ${CORS_URL}
 jwt:
   secretKey: ${JWT_SECRET}
+
+slack:
+  webhook:
+    url: ${SLACK_WEBHOOK_PRODUCTION_URL}
