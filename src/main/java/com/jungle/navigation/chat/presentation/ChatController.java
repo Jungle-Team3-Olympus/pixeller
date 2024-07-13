@@ -92,6 +92,6 @@ public class ChatController {
 
 		ReadMessageResponse response = chatService.readMessage(readerId, messageId);
 		messagingTemplate.convertAndSend(
-				SUBSCRIBE + "/message/direct/" + response.chatRooId(), response);
+				SUBSCRIBE + "/message/direct/" + response.chatRoomId(), response);
 	}
 }
