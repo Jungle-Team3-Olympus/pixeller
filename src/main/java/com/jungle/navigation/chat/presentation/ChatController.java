@@ -7,6 +7,7 @@ import static com.jungle.navigation.chat.support.WebSocketConstant.SUBSCRIBE;
 import com.jungle.navigation.chat.application.ChatService;
 import com.jungle.navigation.chat.presentation.dto.request.SendMessageRequest;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
+import com.jungle.navigation.chat.presentation.dto.response.ReadMessageResponse;
 import com.jungle.navigation.chat.presentation.support.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -83,25 +84,14 @@ public class ChatController {
 		messagingTemplate.convertAndSend(SUBSCRIBE + "/message/direct/" + roomId, response);
 	}
 
-	/**
-	 * pub : pub/message/direct/{roomId} sub : sub/message/direct/{roomId}
-	 *
-	 * <p>특정 member에게 direct message 전송
-	 *
-	 * @param headerAccessor
-	 * @param request
-	 */
-	@MessageMapping("/message/direct/{roomId}")
-	public void sendDirectMessageToMember(
-			@DestinationVariable("roomId") Long roomId,
-			SimpMessageHeaderAccessor headerAccessor,
-			@Payload SendMessageRequest request) {
+	/** 메시지 읽음 표시 */
+	@MessageMapping("/message/{messageId}/read")
+	public void readMessage(
+			@DestinationVariable("messageId") Long messageId, SimpMessageHeaderAccessor headerAccessor) {
+		Long readerId = sessionManager.getValue(headerAccessor, MEMBER_ID, Long.class);
 
-		Long senderId = sessionManager.getValue(headerAccessor, MEMBER_ID, Long.class);
-		String senderName = sessionManager.getValue(headerAccessor, MEMBER_NAME, String.class);
-
-		MessageResponse response =
-				chatService.createDirectMessage(senderId, senderName, roomId, request);
-		messagingTemplate.convertAndSend(SUBSCRIBE + "/message/direct/" + roomId, response);
+		ReadMessageResponse response = chatService.readMessage(readerId, messageId);
+		messagingTemplate.convertAndSend(
+				SUBSCRIBE + "/message/direct/" + response.chatRooId(), response);
 	}
 }

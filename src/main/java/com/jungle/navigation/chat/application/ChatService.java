@@ -1,11 +1,13 @@
 package com.jungle.navigation.chat.application;
 
 import com.jungle.navigation.chat.application.repository.ChatRoomRepository;
+import com.jungle.navigation.chat.application.repository.MemberDataAdaptor;
 import com.jungle.navigation.chat.application.repository.MessageRepository;
 import com.jungle.navigation.chat.persistence.entity.ChatRoom;
 import com.jungle.navigation.chat.persistence.entity.Message;
 import com.jungle.navigation.chat.presentation.dto.request.SendMessageRequest;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
+import com.jungle.navigation.chat.presentation.dto.response.ReadMessageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ public class ChatService {
 
 	private final ChatRoomRepository chatRoomRepository;
 	private final MessageRepository messageRepository;
+	private final MemberDataAdaptor memberDataAdaptor;
 
 	@Transactional
 	public MessageResponse createPublicMessage(
@@ -34,6 +37,14 @@ public class ChatService {
 		saveMessage(roomId, request, senderId);
 
 		return MessageResponse.of(roomId, senderName, request.content());
+	}
+
+	@Transactional
+	public ReadMessageResponse readMessage(Long readerId, Long messageId) {
+		Message message = messageRepository.getById(messageId);
+		message.readMessage(readerId);
+
+		return new ReadMessageResponse(message.getRoomId(), messageId, message.getReadCount());
 	}
 
 	private void saveMessage(Long roomId, SendMessageRequest request, Long memberId) {
