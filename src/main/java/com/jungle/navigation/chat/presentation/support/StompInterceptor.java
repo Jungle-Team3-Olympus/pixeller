@@ -5,8 +5,6 @@ import static com.jungle.navigation.chat.presentation.support.ChatConstants.MEMB
 
 import com.jungle.navigation.auth.presentation.support.MemberInfo;
 import com.jungle.navigation.auth.presentation.support.TokenResolver;
-import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -21,7 +19,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StompInterceptor implements ChannelInterceptor {
 	private static final String AUTHORIZATION = "Authorization";
+
 	private final TokenResolver tokenResolver;
+	private final SessionManager sessionManager;
 
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -61,21 +61,7 @@ public class StompInterceptor implements ChannelInterceptor {
 
 		MemberInfo memberInfo = tokenResolver.decode(authorizationHeader);
 
-		setValue(accessor, MEMBER_ID, memberInfo.getMemberId());
-		setValue(accessor, MEMBER_NAME, memberInfo.getMemberName());
-	}
-
-	private void setValue(StompHeaderAccessor accessor, String key, Object value) {
-		Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
-		sessionAttributes.put(key, value);
-	}
-
-	private Map<String, Object> getSessionAttributes(StompHeaderAccessor accessor) {
-		Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
-
-		if (Objects.isNull(sessionAttributes)) {
-			throw new IllegalArgumentException("SessionAttributes가 null입니다.");
-		}
-		return sessionAttributes;
+		sessionManager.setValue(accessor, MEMBER_ID, memberInfo.getMemberId());
+		sessionManager.setValue(accessor, MEMBER_NAME, memberInfo.getMemberName());
 	}
 }
