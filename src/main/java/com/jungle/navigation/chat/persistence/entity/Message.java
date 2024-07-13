@@ -39,7 +39,20 @@ public class Message {
 	@Column(name = "content", columnDefinition = "TEXT")
 	private String content;
 
+	@Column(name = "read_count")
+	private int readCount;
+
 	@Builder.Default
 	@Column(name = "send_time")
 	private Timestamp sendTime = new Timestamp(System.currentTimeMillis());
+
+	public void readMessage(Long readerId) {
+		if (isReader(readerId)) {
+			readCount -= 1;
+		}
+	}
+
+	private boolean isReader(Long readerId) {
+		return !senderId.equals(readerId);
+	}
 }
