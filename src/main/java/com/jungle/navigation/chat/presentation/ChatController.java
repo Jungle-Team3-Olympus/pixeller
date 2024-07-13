@@ -64,13 +64,35 @@ public class ChatController {
 	/**
 	 * pub : pub/message/direct/{roomId} sub : sub/message/direct/{roomId}
 	 *
-	 * <p>direct message 전송
+	 * <p>특정 room에 direct message 전송
 	 *
 	 * @param headerAccessor
 	 * @param request
 	 */
 	@MessageMapping("/message/direct/{roomId}")
-	public void sendDirectMessage(
+	public void sendDirectMessageToRoom(
+			@DestinationVariable("roomId") Long roomId,
+			SimpMessageHeaderAccessor headerAccessor,
+			@Payload SendMessageRequest request) {
+
+		Long senderId = sessionManager.getValue(headerAccessor, MEMBER_ID, Long.class);
+		String senderName = sessionManager.getValue(headerAccessor, MEMBER_NAME, String.class);
+
+		MessageResponse response =
+				chatService.createDirectMessage(senderId, senderName, roomId, request);
+		messagingTemplate.convertAndSend(SUBSCRIBE + "/message/direct/" + roomId, response);
+	}
+
+	/**
+	 * pub : pub/message/direct/{roomId} sub : sub/message/direct/{roomId}
+	 *
+	 * <p>특정 member에게 direct message 전송
+	 *
+	 * @param headerAccessor
+	 * @param request
+	 */
+	@MessageMapping("/message/direct/{roomId}")
+	public void sendDirectMessageToMember(
 			@DestinationVariable("roomId") Long roomId,
 			SimpMessageHeaderAccessor headerAccessor,
 			@Payload SendMessageRequest request) {
