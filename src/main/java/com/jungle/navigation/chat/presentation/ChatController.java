@@ -7,14 +7,23 @@ import static com.jungle.navigation.chat.support.WebSocketConstant.SUBSCRIBE;
 import com.jungle.navigation.chat.application.ChatService;
 import com.jungle.navigation.chat.presentation.dto.request.SendMessageRequest;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
+import com.jungle.navigation.chat.presentation.dto.response.MessagesResponse;
 import com.jungle.navigation.chat.presentation.dto.response.ReadMessageResponse;
+import com.jungle.navigation.chat.presentation.support.RoomSuccessMessageCode;
 import com.jungle.navigation.chat.presentation.support.SessionManager;
+import com.jungle.navigation.common.presentation.respnose.ApiResponse;
+import com.jungle.navigation.common.presentation.respnose.ApiResponseBody.SuccessBody;
+import com.jungle.navigation.common.presentation.respnose.ApiResponseGenerator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -93,5 +102,20 @@ public class ChatController {
 		ReadMessageResponse response = chatService.readMessage(readerId, messageId);
 		messagingTemplate.convertAndSend(
 				SUBSCRIBE + "/message/direct/" + response.chatRoomId(), response);
+	}
+
+	/**
+	 * 해당 방의 메시지들을 가져온다
+	 *
+	 * @param roomId
+	 * @return
+	 */
+	@GetMapping("/chat-room/{roomId}")
+	public ApiResponse<SuccessBody<MessagesResponse>> getMessageByRoom(
+			@PathVariable("roomId") Long roomId,
+			@RequestParam(required = false, defaultValue = "0", value = "message") int messageId,
+			@RequestParam(required = false, defaultValue = "10", value = "size") int pageSize) {
+		MessagesResponse response = chatService.findByChatRoomId(roomId, messageId, pageSize);
+		return ApiResponseGenerator.success(response, HttpStatus.OK, RoomSuccessMessageCode.GET_ROOM);
 	}
 }
