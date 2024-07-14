@@ -193,6 +193,7 @@ public class ProductService {
 
 			for (MultipartFile image : images) {
 				String originalFileName = image.getOriginalFilename();
+				// 정리된 파일 네임
 				String sanitizedFileName = sanitizeFileName(createAt.getTime() + "_" + originalFileName);
 				Path filePath = uploadPath.resolve(sanitizedFileName).normalize();
 

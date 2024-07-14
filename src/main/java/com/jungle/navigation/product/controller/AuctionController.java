@@ -60,8 +60,7 @@ public class AuctionController {
 
 	// 현재 가격 불러오기
 	@GetMapping("/price/{productId}")
-	public ResponseEntity<PriceDto> getPresentPrice(
-			@PathVariable("productId") int productId) {
+	public ResponseEntity<PriceDto> getPresentPrice(@PathVariable("productId") int productId) {
 
 		PriceDto priceDto = auctionService.getPrice(productId);
 		return ResponseEntity.ok(priceDto);

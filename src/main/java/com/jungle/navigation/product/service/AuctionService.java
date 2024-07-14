@@ -46,7 +46,6 @@ public class AuctionService {
 		return auctionRepository.save(newAuction);
 	}
 
-
 	// 경매 결과 저장, 해당 경매 로우 resultId 업데이트
 	@Transactional
 	public AuctionResultEntity closeAuction(int auctionId) {
@@ -73,7 +72,8 @@ public class AuctionService {
 
 		auctionResult = auctionResultRepository.save(auctionResult);
 
-		List<AuctionEntity> auctionList = auctionRepository.findAllByProductId(productInfo.getProductId());
+		List<AuctionEntity> auctionList =
+				auctionRepository.findAllByProductId(productInfo.getProductId());
 		// 경매 엔티티에 auctionResultId 업데이트
 		for (AuctionEntity auction : auctionList) {
 			auction.setAuctionResultId(auctionResult.getAuctionResultId());
@@ -92,7 +92,8 @@ public class AuctionService {
 
 	public PriceDto getPrice(int productId) {
 
-		ProductEntity presentProduct = productsRepository
+		ProductEntity presentProduct =
+				productsRepository
 						.findById(productId)
 						.orElseThrow(() -> new RuntimeException("Product not found"));
 		int primaryPrice = presentProduct.getPrice();
