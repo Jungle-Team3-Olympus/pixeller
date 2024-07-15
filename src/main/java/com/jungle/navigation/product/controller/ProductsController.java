@@ -2,18 +2,15 @@ package com.jungle.navigation.product.controller;
 
 import com.jungle.navigation.auth.presentation.support.Member;
 import com.jungle.navigation.auth.presentation.support.MemberInfo;
-import com.jungle.navigation.product.dto.DetailDto;
-import com.jungle.navigation.product.dto.ProductDto;
+import com.jungle.navigation.product.dto.RequestProductDto;
+import com.jungle.navigation.product.dto.ResponseProductWithImageUrlDto;
 import com.jungle.navigation.product.entity.ProductEntity;
-import com.jungle.navigation.product.entity.ProductFileEntity;
 import com.jungle.navigation.product.service.ProductService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/products")
@@ -26,32 +23,28 @@ public class ProductsController {
 	}
 
 	// 상품 등록
-	@PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	@PostMapping
 	public ResponseEntity<ProductEntity> registerProduct(
-			ProductDto productDto,
-			@RequestPart(value = "imgFiles", required = true) List<MultipartFile> imgFiles,
-			BindingResult result,
-			@Member MemberInfo memberInfo) {
-		if (result.hasErrors()) {
-			return ResponseEntity.badRequest().build();
-		}
+			@RequestBody @Valid RequestProductDto requestProductDto, @Member MemberInfo memberInfo) {
 
 		ProductEntity newProduct =
-				productService.registerProduct(productDto, imgFiles, memberInfo.getMemberId());
+				productService.registerProduct(requestProductDto, memberInfo.getMemberId());
 		return ResponseEntity.status(HttpStatus.CREATED).body(newProduct);
 	}
 
 	// 모든 상품 조회
 	@GetMapping
-	public ResponseEntity<List<DetailDto>> getAllProducts() {
-		List<DetailDto> products = productService.getAllProducts();
+	public ResponseEntity<List<ResponseProductWithImageUrlDto>> getAllProducts() {
+		List<ResponseProductWithImageUrlDto> products = productService.getAllProducts();
 		return ResponseEntity.ok(products);
 	}
 
 	// 특정 상품 조회
 	@GetMapping("/{productId}")
-	public ResponseEntity<DetailDto> getProductById(@PathVariable("productId") int productId) {
-		DetailDto productWithImageUrls = productService.getProductWithImageUrlById(productId);
+	public ResponseEntity<ResponseProductWithImageUrlDto> getProductById(
+			@PathVariable("productId") int productId) {
+		ResponseProductWithImageUrlDto productWithImageUrls =
+				productService.getProductWithImageUrlById(productId);
 		return ResponseEntity.ok(productWithImageUrls);
 	}
 
@@ -59,14 +52,9 @@ public class ProductsController {
 	@PutMapping("/{productId}")
 	public ResponseEntity<ProductEntity> updateProduct(
 			@PathVariable("productId") int productId,
-			ProductDto productDto,
-			@RequestPart(value = "imgFiles", required = true) List<MultipartFile> imgFiles,
-			BindingResult result) {
-		if (result.hasErrors()) {
-			return ResponseEntity.badRequest().build();
-		}
+			@RequestBody @Valid RequestProductDto requestProductDto) {
 
-		ProductEntity updatedProduct = productService.editorProduct(productDto, imgFiles, productId);
+		ProductEntity updatedProduct = productService.editorProduct(requestProductDto, productId);
 		if (updatedProduct != null) {
 			return ResponseEntity.ok(updatedProduct);
 		} else {
@@ -79,17 +67,5 @@ public class ProductsController {
 	public ResponseEntity<Void> deleteProduct(@PathVariable("productId") int productId) {
 		productService.deleteProduct(productId);
 		return ResponseEntity.noContent().build();
-	}
-
-	// 특정 상품의 이미지 파일들 조회
-	@GetMapping("/{productId}/files")
-	public ResponseEntity<List<ProductFileEntity>> getProductFiles(
-			@PathVariable("productId") int productId) {
-		List<ProductFileEntity> productFiles = productService.getProductFilesByProductId(productId);
-		if (!productFiles.isEmpty()) {
-			return ResponseEntity.ok(productFiles);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
 	}
 }
