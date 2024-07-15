@@ -32,8 +32,14 @@ public class ProductEntity {
 	@Column(name = "reg_date")
 	private Timestamp createdAt;
 
-	private char sale_yn;
-	private char use_yn;
+	@Column(name = "sale_yn")
+	private char saleYn;
+
+	@Column(name = "use_yn")
+	private char useYn;
+
+	@Column(name = "auction_start_time")
+	private Timestamp auctionStartTime;
 
 	public void setMemberId(Long memberId) {
 		this.memberId = Math.toIntExact(memberId);
