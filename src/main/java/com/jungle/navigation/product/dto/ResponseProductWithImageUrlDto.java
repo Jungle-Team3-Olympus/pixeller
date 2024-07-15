@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ResponseDetailDto {
+public class ResponseProductWithImageUrlDto {
 
 	private int productId;
 	private String name;
@@ -18,6 +18,7 @@ public class ResponseDetailDto {
 	private char useYn;
 	private List<String> imageFileUrls;
 	private MemberDto memberDto;
+	private Timestamp auctionStartTime;
 
 	public static record MemberDto(
 			int id,
