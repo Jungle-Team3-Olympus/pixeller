@@ -27,3 +27,14 @@ jwt:
 slack:
   webhook:
     url: https://fakeslackurl
+
+cloud:
+  aws:
+    region: ap-northeast-2
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+  s3:
+    bucket: ${BUCKET_NAME}
+  stack:
+    auto: false
