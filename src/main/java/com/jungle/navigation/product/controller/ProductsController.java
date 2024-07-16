@@ -2,6 +2,7 @@ package com.jungle.navigation.product.controller;
 
 import com.jungle.navigation.auth.presentation.support.Member;
 import com.jungle.navigation.auth.presentation.support.MemberInfo;
+import com.jungle.navigation.product.dto.RequestEditDto;
 import com.jungle.navigation.product.dto.RequestProductDto;
 import com.jungle.navigation.product.dto.ResponseProductWithImageUrlDto;
 import com.jungle.navigation.product.entity.ProductEntity;
@@ -51,15 +52,10 @@ public class ProductsController {
 	// 상품 수정
 	@PutMapping("/{productId}")
 	public ResponseEntity<ProductEntity> updateProduct(
-			@PathVariable("productId") int productId,
-			@RequestBody @Valid RequestProductDto requestProductDto) {
+			@PathVariable("productId") int productId, @RequestBody @Valid RequestEditDto requestEditDto) {
 
-		ProductEntity updatedProduct = productService.editorProduct(requestProductDto, productId);
-		if (updatedProduct != null) {
-			return ResponseEntity.ok(updatedProduct);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+		ProductEntity updatedProduct = productService.editorProduct(requestEditDto, productId);
+		return ResponseEntity.ok(updatedProduct);
 	}
 
 	// 상품 삭제
