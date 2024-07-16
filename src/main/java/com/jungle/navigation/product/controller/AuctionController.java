@@ -36,26 +36,17 @@ public class AuctionController {
 	@PostMapping("/close/{auctionId}")
 	public ResponseEntity<AuctionResultEntity> closeAuction(
 			@PathVariable("auctionId") int auctionId) {
-		try {
-			AuctionResultEntity result = auctionService.closeAuction(auctionId);
-			return ResponseEntity.ok(result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
+
+		AuctionResultEntity result = auctionService.closeAuction(auctionId);
+		return ResponseEntity.ok(result);
 	}
 
 	// 경매 종료시 경매 종료(낙찰 정보) 조회
-	@GetMapping("/result/{auctionId}")
+	@GetMapping("/result/{auctionResultId}")
 	public ResponseEntity<AuctionResultEntity> getAuctionResult(
-			@PathVariable("auctionId") int auctionId) {
-		try {
-			AuctionResultEntity result = auctionService.getAuctionResult(auctionId);
-			return ResponseEntity.ok(result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
+			@PathVariable("auctionResultId") int auctionResultId) {
+		AuctionResultEntity result = auctionService.getAuctionResult(auctionResultId);
+		return ResponseEntity.ok(result);
 	}
 
 	// 현재 가격 불러오기

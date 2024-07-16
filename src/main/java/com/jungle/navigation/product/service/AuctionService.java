@@ -1,5 +1,6 @@
 package com.jungle.navigation.product.service;
 
+import com.jungle.navigation.common.exception.BusinessException;
 import com.jungle.navigation.product.dto.PriceDto;
 import com.jungle.navigation.product.entity.AuctionEntity;
 import com.jungle.navigation.product.entity.AuctionResultEntity;
@@ -35,6 +36,11 @@ public class AuctionService {
 	@Transactional
 	public AuctionEntity createAuction(int productId, int memberId, int bidPrice) {
 
+		boolean productExists = productsRepository.existsById(productId);
+		if (!productExists) {
+			throw new BusinessException("Invalid productId " + productId);
+		}
+
 		AuctionEntity newAuction = new AuctionEntity();
 
 		newAuction.setProductId(productId);
@@ -50,17 +56,22 @@ public class AuctionService {
 	@Transactional
 	public AuctionResultEntity closeAuction(int auctionId) {
 
+		boolean auctionExists = auctionRepository.existsById(auctionId);
+		if (!auctionExists) {
+			throw new BusinessException("Invalid auctionId " + auctionId);
+		}
+
 		// 낙찰 받은 엔티티 가져오기
 		AuctionEntity mostBid =
 				auctionRepository
 						.findById(auctionId)
-						.orElseThrow(() -> new RuntimeException("Auction not found"));
+						.orElseThrow(() -> new BusinessException("Auction not found"));
 
 		// 경매 상품 정보
 		ProductEntity productInfo =
 				productsRepository
 						.findById(mostBid.getProductId())
-						.orElseThrow(() -> new RuntimeException("Product not found"));
+						.orElseThrow(() -> new BusinessException("Product not found"));
 
 		AuctionResultEntity auctionResult = new AuctionResultEntity();
 		auctionResult.setAuctionId(auctionId);
@@ -70,32 +81,43 @@ public class AuctionService {
 		auctionResult.setSellerId(productInfo.getMemberId());
 		auctionResult.setProductId(productInfo.getProductId());
 
+		// 경매 결과 저장
 		auctionResult = auctionResultRepository.save(auctionResult);
 
+		// 경매 엔티티에 auctionResultId 업데이트
 		List<AuctionEntity> auctionList =
 				auctionRepository.findAllByProductId(productInfo.getProductId());
-		// 경매 엔티티에 auctionResultId 업데이트
 		for (AuctionEntity auction : auctionList) {
 			auction.setAuctionResultId(auctionResult.getAuctionResultId());
-			System.out.println(auctionResult.getAuctionResultId());
 		}
 		auctionRepository.saveAll(auctionList);
 
-		// 경매 결과 저장
 		return auctionResult;
 	}
 
-	public AuctionResultEntity getAuctionResult(int auctionId) {
+	public AuctionResultEntity getAuctionResult(int auctionResultId) {
 
-		return auctionResultRepository.findByAuctionId(auctionId);
+		boolean auctionExists = auctionResultRepository.existsById(auctionResultId);
+		if (!auctionExists) {
+			throw new BusinessException("Invalid auctionId " + auctionResultId);
+		}
+
+		return auctionResultRepository
+				.findById(auctionResultId)
+				.orElseThrow(() -> new BusinessException("Auction result not found"));
 	}
 
 	public PriceDto getPrice(int productId) {
 
+		boolean productExists = productsRepository.existsById(productId);
+		if (!productExists) {
+			throw new BusinessException("Invalid productId " + productId);
+		}
+
 		ProductEntity presentProduct =
 				productsRepository
 						.findById(productId)
-						.orElseThrow(() -> new RuntimeException("Product not found"));
+						.orElseThrow(() -> new BusinessException("Product not found"));
 		int primaryPrice = presentProduct.getPrice();
 
 		List<AuctionEntity> bidList = auctionRepository.findAllByProductId(productId);
