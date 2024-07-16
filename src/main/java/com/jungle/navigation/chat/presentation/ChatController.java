@@ -47,6 +47,7 @@ public class ChatController {
 	public void sendWelcomeMessage(SimpMessageHeaderAccessor headerAccessor) {
 		String enterName = sessionManager.getValue(headerAccessor, MEMBER_NAME, String.class);
 		MessageResponse response = MessageResponse.of(1L, enterName, enterName + WELCOME_MESSAGE);
+
 		messagingTemplate.convertAndSend(SUB_PUBLIC_ROOM, response);
 	}
 
@@ -60,13 +61,8 @@ public class ChatController {
 	@MessageMapping("/message/" + PUBLIC_ROOM_UUID)
 	public void sendPublicMessage(
 			SimpMessageHeaderAccessor headerAccessor, @Payload SendMessageRequest request) {
-
-		Long senderId = sessionManager.getValue(headerAccessor, MEMBER_ID, Long.class);
 		String senderName = sessionManager.getValue(headerAccessor, MEMBER_NAME, String.class);
-
-		MessageResponse response =
-				chatService.createPublicMessage(
-						senderId, senderName, Long.valueOf(PUBLIC_ROOM_UUID), request);
+		MessageResponse response = MessageResponse.of(1L, senderName, request.content());
 
 		messagingTemplate.convertAndSend(SUB_PUBLIC_ROOM, response);
 	}

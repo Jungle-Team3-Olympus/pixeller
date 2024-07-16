@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +31,6 @@ public class ChatService {
 	private final ChatRoomRepository chatRoomRepository;
 	private final MessageRepository messageRepository;
 	private final MemberDataAdaptor memberDataAdaptor;
-
-	@Transactional
-	public MessageResponse createPublicMessage(
-			Long memberId, String memberName, Long roomId, SendMessageRequest request) {
-		saveMessage(roomId, request, memberId);
-
-		return MessageResponse.of(PUBLIC_ROOM, memberName, request.content());
-	}
 
 	@Transactional
 	public MessageResponse createDirectMessage(
@@ -56,15 +50,14 @@ public class ChatService {
 	}
 
 	public MessagesResponse<EachMessage> findByChatRoomId(
-			Long chatRoomId, int messageId, int pageSize) {
+			Long chatRoomId, int pageNumber, int pageSize) {
 		chatRoomRepository.validateById(chatRoomId);
-		return getMessagesByRoom(chatRoomId, messageId, pageSize);
+		return getMessagesByRoom(chatRoomId, pageNumber, pageSize);
 	}
 
 	private MessagesResponse<EachMessage> getMessagesByRoom(
-			Long roomId, int messageId, int pageSize) {
-		Pageable pageable = PageRequest.of(messageId, pageSize);
-		Slice<Message> messages = messageRepository.findByRoomIdOrderBySendTimeAsc(roomId, pageable);
+			Long roomId, int pageNumber, int pageSize) {
+		Slice<Message> messages = getMessagesByRoomId(roomId, pageNumber, pageSize);
 		Map<Long, String> sendersName = getSenderName(messages.getContent());
 
 		List<EachMessage> data =
@@ -72,6 +65,7 @@ public class ChatService {
 						.map(
 								message ->
 										new EachMessage(
+												message.getId(),
 												sendersName.get(message.getSenderId()),
 												message.getContent(),
 												message.getReadCount()))
@@ -79,6 +73,13 @@ public class ChatService {
 
 		return new MessagesResponse(
 				roomId, data, messages.hasNext(), messages.getNumber(), messages.getSize());
+	}
+
+	private Slice<Message> getMessagesByRoomId(Long roomId, int pageNumber, int pageSize) {
+		Sort sort = Sort.by(Direction.ASC, "sendTime");
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+		return messageRepository.findAllByRoomId(roomId, pageable);
 	}
 
 	private Map<Long, String> getSenderName(List<Message> messages) {
@@ -96,12 +97,8 @@ public class ChatService {
 
 	private void saveMessage(Long roomId, SendMessageRequest request, Long memberId) {
 		ChatRoom chatRoom = chatRoomRepository.getById(roomId);
-		Message message = toEntity(request, chatRoom.getId(), memberId);
+		Message message = Message.of(chatRoom.getId(), memberId, request.content());
 		messageRepository.save(message);
-	}
-
-	private Message toEntity(SendMessageRequest request, Long roomId, Long memberId) {
-		return Message.builder().roomId(roomId).senderId(memberId).content(request.content()).build();
 	}
 
 	private void validateExistChatRoom(Long roomId) {
