@@ -12,12 +12,12 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class LoginConfig implements WebMvcConfigurer {
+public class AuthConfig implements WebMvcConfigurer {
 	private final MemberArgumentResolver memberArgumentResolver;
 	private final TokenResolver tokenResolver;
 	private final TokenExtractor tokenExtractor;
 
-	public LoginConfig(
+	public AuthConfig(
 			MemberArgumentResolver memberArgumentResolver,
 			TokenResolver tokenResolver,
 			TokenExtractor tokenExtractor) {
@@ -28,7 +28,7 @@ public class LoginConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(memberAuthInterceptor()).addPathPatterns("/**");
+		registry.addInterceptor(memberAuthInterceptor()).excludePathPatterns("/swagger-ui/**", "/v3/api-docs/**").addPathPatterns("/**");
 	}
 
 	@Override
