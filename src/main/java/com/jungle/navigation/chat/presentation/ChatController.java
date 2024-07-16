@@ -46,7 +46,7 @@ public class ChatController {
 	@MessageMapping("/message/" + PUBLIC_ROOM_UUID + "/enter")
 	public void sendWelcomeMessage(SimpMessageHeaderAccessor headerAccessor) {
 		String enterName = sessionManager.getValue(headerAccessor, MEMBER_NAME, String.class);
-		MessageResponse response = MessageResponse.of(1L, enterName, WELCOME_MESSAGE);
+		MessageResponse response = MessageResponse.of(1L, enterName, enterName + WELCOME_MESSAGE);
 		messagingTemplate.convertAndSend(SUB_PUBLIC_ROOM, response);
 	}
 
@@ -110,12 +110,12 @@ public class ChatController {
 	 * @param roomId
 	 * @return
 	 */
-	@GetMapping("/chat-room/{roomId}")
+	@GetMapping("/api/chat-room/{roomId}")
 	public ApiResponse<SuccessBody<MessagesResponse>> getMessageByRoom(
 			@PathVariable("roomId") Long roomId,
-			@RequestParam(required = false, defaultValue = "0", value = "message") int messageId,
+			@RequestParam(required = false, defaultValue = "0", value = "page") int pageNumber,
 			@RequestParam(required = false, defaultValue = "10", value = "size") int pageSize) {
-		MessagesResponse response = chatService.findByChatRoomId(roomId, messageId, pageSize);
+		MessagesResponse response = chatService.findByChatRoomId(roomId, pageNumber, pageSize);
 		return ApiResponseGenerator.success(response, HttpStatus.OK, RoomSuccessMessageCode.GET_ROOM);
 	}
 }
