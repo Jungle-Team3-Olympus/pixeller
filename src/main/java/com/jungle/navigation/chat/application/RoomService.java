@@ -61,7 +61,7 @@ public class RoomService {
 												message.getReadCount()))
 						.toList();
 
-		return new SliceResponse<>(
+		return SliceResponse.of(
 				response, messages.getNumber(), messages.getSize(), messages.isFirst(), messages.isLast());
 	}
 
