@@ -5,7 +5,7 @@ import static com.jungle.navigation.alarm.config.RMQProperties.WAITING_ROUTING_K
 
 import com.jungle.navigation.alarm.Alarm;
 import com.jungle.navigation.alarm.AlarmScheduler;
-import com.jungle.navigation.alarm.domain.NotificationType;
+import com.jungle.navigation.alarm.domain.AlarmType;
 import com.jungle.navigation.alarm.dto.DelaySendAlarmRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +18,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class AuctionStartAlarmPublisher implements AlarmPublisher {
+public class AuctionStartAlarmPublisher implements AlarmPublisher<DelaySendAlarmRequest> {
 	private final RabbitTemplate rabbitTemplate;
 
 	@Override
+	public AlarmType support() {
+		return AlarmType.AUCTION_START;
+	}
+
+	@Override
 	public void sendAlarm(@RequestBody DelaySendAlarmRequest request) {
-		Alarm alarm = new Alarm(request.targetId(), NotificationType.AUCTION_START.name());
+		Alarm alarm = new Alarm(request.targetId(), AlarmType.AUCTION_START.name());
 		AlarmScheduler alarmScheduler = new AlarmScheduler(request.targetTime());
 
 		this.rabbitTemplate.convertAndSend(
