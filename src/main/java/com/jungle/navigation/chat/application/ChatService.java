@@ -8,8 +8,8 @@ import com.jungle.navigation.chat.persistence.entity.Message;
 import com.jungle.navigation.chat.presentation.dto.request.SendMessageRequest;
 import com.jungle.navigation.chat.presentation.dto.response.EachMessage;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
-import com.jungle.navigation.chat.presentation.dto.response.MessagesResponse;
 import com.jungle.navigation.chat.presentation.dto.response.ReadMessageResponse;
+import com.jungle.navigation.common.presentation.respnose.SliceResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,8 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ChatService {
-	private static final Long PUBLIC_ROOM = 1L;
-
 	private final ChatRoomRepository chatRoomRepository;
 	private final MessageRepository messageRepository;
 	private final MemberDataAdaptor memberDataAdaptor;
@@ -49,14 +47,13 @@ public class ChatService {
 		return new ReadMessageResponse(message.getRoomId(), messageId, message.getReadCount());
 	}
 
-	public MessagesResponse<EachMessage> findByChatRoomId(
+	public SliceResponse<EachMessage> findByChatRoomId(
 			Long chatRoomId, int pageNumber, int pageSize) {
 		chatRoomRepository.validateById(chatRoomId);
 		return getMessagesByRoom(chatRoomId, pageNumber, pageSize);
 	}
 
-	private MessagesResponse<EachMessage> getMessagesByRoom(
-			Long roomId, int pageNumber, int pageSize) {
+	private SliceResponse<EachMessage> getMessagesByRoom(Long roomId, int pageNumber, int pageSize) {
 		Slice<Message> messages = getMessagesByRoomId(roomId, pageNumber, pageSize);
 		Map<Long, String> sendersName = getSenderName(messages.getContent());
 
@@ -71,8 +68,8 @@ public class ChatService {
 												message.getReadCount()))
 						.toList();
 
-		return new MessagesResponse(
-				roomId, data, messages.hasNext(), messages.getNumber(), messages.getSize());
+		return new SliceResponse<>(
+				data, messages.getNumber(), messages.getSize(), messages.isFirst(), messages.isLast());
 	}
 
 	private Slice<Message> getMessagesByRoomId(Long roomId, int pageNumber, int pageSize) {
