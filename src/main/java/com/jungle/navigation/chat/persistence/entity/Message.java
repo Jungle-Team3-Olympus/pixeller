@@ -24,6 +24,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = Message.PREFIX)
 public class Message {
 	public static final String PREFIX = "messages";
+	private static final int DIRECT_DEFAULT_COUNT = 2;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +40,9 @@ public class Message {
 	@Column(name = "content", columnDefinition = "TEXT")
 	private String content;
 
+	@Builder.Default
 	@Column(name = "read_count")
-	private int readCount;
+	private int readCount = DIRECT_DEFAULT_COUNT;
 
 	@Builder.Default
 	@Column(name = "send_time")
