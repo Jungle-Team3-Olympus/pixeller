@@ -1,7 +1,7 @@
 package com.jungle.navigation.alarm;
 
 import static com.jungle.navigation.alarm.config.RMQProperties.ALARM_QUEUE_NAME;
-import static com.jungle.navigation.alarm.pub.AlarmConstant.ALARM_DESTINATION;
+import static com.jungle.navigation.alarm.pub.AlarmConstant.getAlarmDestination;
 
 import com.rabbitmq.client.Channel;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class AlarmConsumer {
 	public void listenerDelayQueue(@Payload Alarm alarm, Message message, Channel channel) {
 		log.info("[listener message] - [소비시간] - [{}] - [{}]", LocalDateTime.now(), alarm.toString());
 		try {
-			messagingTemplate.convertAndSend(ALARM_DESTINATION + "/" + alarm.getTargetId());
+			messagingTemplate.convertAndSend(getAlarmDestination(alarm.getTargetId()), alarm);
 			channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 		} catch (IOException e) {
 			log.error("[listener message] :  ERROR ", e);
