@@ -5,7 +5,5 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FileRepository extends JpaRepository<ProductFileEntity, Integer> {
-	List<ProductFileEntity> findByProductId(int productId);
-
-	List<ProductFileEntity> findAllByProductId(int productId);
+	List<ProductFileEntity> findAllByProductIdAndUseYn(int productId, char useYn);
 }
