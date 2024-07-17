@@ -20,4 +20,6 @@ public interface MessageJpaRepository extends JpaRepository<Message, Long>, Mess
 					+ "WHERE rm.memberId = :memberId AND m.sendTime = (SELECT MAX(m2.sendTime) FROM Message m2 WHERE m2.roomId = m.roomId) "
 					+ "ORDER BY m.sendTime DESC")
 	Slice<Message> findRoomsByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+
+	Slice<Message> findAllByRoomId(Long roomId, Pageable pageable);
 }
