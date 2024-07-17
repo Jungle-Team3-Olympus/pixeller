@@ -17,6 +17,16 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
     generate-ddl: false
     open-in-view: false
+  rabbitmq:
+    host: ${MQ_HOST}
+    port: ${MQ_PORT}
+    username: ${MQ_USERNAME}
+    password: ${MQ_PASSWORD}
+    stream:
+      virtual-host: ${MQ_VIRTUAL_HOST}
+    listener:
+      simple:
+        acknowledge-mode: manual
 cors:
   allow-origin:
     urls: ${CORS_URL}
