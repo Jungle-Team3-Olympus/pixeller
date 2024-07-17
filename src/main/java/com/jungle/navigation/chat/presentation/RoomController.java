@@ -1,5 +1,7 @@
 package com.jungle.navigation.chat.presentation;
 
+import static com.jungle.navigation.chat.support.WebSocketEndpoints.getChatRoomsDestination;
+
 import com.jungle.navigation.auth.presentation.support.Member;
 import com.jungle.navigation.auth.presentation.support.MemberInfo;
 import com.jungle.navigation.chat.application.RoomService;
@@ -15,8 +17,9 @@ import com.jungle.navigation.common.presentation.respnose.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RoomController implements RoomApi {
 
 	private final RoomService roomService;
+	private final SimpMessageSendingOperations messagingTemplate;
 
 	@Override
 	@PostMapping("/chat-room/opposite/{oppositeId}")
@@ -39,9 +43,10 @@ public class RoomController implements RoomApi {
 				response, HttpStatus.OK, RoomSuccessMessageCode.CREATE_ROOM);
 	}
 
-	@SubscribeMapping("/chat-room/{memberId}")
-	public SliceResponse<GetChatRoomsResponse> getChatRooms(
-			@DestinationVariable Long memberId, @Payload GetPagesRequest request) {
-		return roomService.getChatRooms(memberId, request.page(), request.size());
+	@MessageMapping("/chat-room/{memberId}")
+	public void getChatRooms(@DestinationVariable Long memberId, @Payload GetPagesRequest request) {
+		SliceResponse<GetChatRoomsResponse> response =
+				roomService.getChatRooms(memberId, request.page(), request.size());
+		messagingTemplate.convertAndSend(getChatRoomsDestination(memberId), response);
 	}
 }

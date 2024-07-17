@@ -2,7 +2,8 @@ package com.jungle.navigation.chat.presentation;
 
 import static com.jungle.navigation.chat.presentation.support.ChatConstants.MEMBER_ID;
 import static com.jungle.navigation.chat.presentation.support.ChatConstants.MEMBER_NAME;
-import static com.jungle.navigation.chat.support.WebSocketConstant.SUBSCRIBE;
+import static com.jungle.navigation.chat.support.WebSocketEndpoints.SUBSCRIBE;
+import static com.jungle.navigation.chat.support.WebSocketEndpoints.getDirectMessageDestination;
 
 import com.jungle.navigation.chat.application.ChatService;
 import com.jungle.navigation.chat.presentation.dto.request.GetPagesRequest;
@@ -18,7 +19,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -81,7 +81,7 @@ public class ChatController {
 
 		MessageResponse response =
 				chatService.createDirectMessage(senderId, senderName, roomId, request);
-		messagingTemplate.convertAndSend(SUBSCRIBE + "/message/direct/" + roomId, response);
+		messagingTemplate.convertAndSend(getDirectMessageDestination(roomId), response);
 	}
 
 	/** 메시지 읽음 표시 */
@@ -91,15 +91,15 @@ public class ChatController {
 		Long readerId = sessionManager.getValue(headerAccessor, MEMBER_ID, Long.class);
 
 		ReadMessageResponse response = chatService.readMessage(readerId, messageId);
-		messagingTemplate.convertAndSend(
-				SUBSCRIBE + "/message/direct/" + response.chatRoomId(), response);
+		messagingTemplate.convertAndSend(getDirectMessageDestination(response.chatRoomId()), response);
 	}
 
 	/** 해당 방의 메시지를 가져온다 */
-	@SubscribeMapping("/message/direct/{roomId}")
-	public SliceResponse<EachMessage> getMessageByRoom(
-			@DestinationVariable Long roomId, @Payload GetPagesRequest request) {
+	@MessageMapping("/message/direct/{roomId}")
+	public void getMessageByRoom(@DestinationVariable Long roomId, @Payload GetPagesRequest request) {
 
-		return chatService.findByChatRoomId(roomId, request.page(), request.size());
+		SliceResponse<EachMessage> response =
+				chatService.findByChatRoomId(roomId, request.page(), request.size());
+		messagingTemplate.convertAndSend(getDirectMessageDestination(roomId), response);
 	}
 }
