@@ -3,7 +3,7 @@ package com.jungle.navigation.alarm.pub;
 import static com.jungle.navigation.alarm.pub.AlarmConstant.ALARM_DESTINATION;
 
 import com.jungle.navigation.alarm.domain.AlarmType;
-import com.jungle.navigation.alarm.dto.DelaySendAlarmRequest;
+import com.jungle.navigation.alarm.event.DelayAlarmEvent;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class PurchaseRequestAlarmPublisher implements AlarmPublisher<DelaySendAlarmRequest> {
+public class PurchaseRequestAlarmPublisher implements AlarmPublisher<DelayAlarmEvent> {
 	private final SimpMessageSendingOperations messagingTemplate;
 
 	@Override
@@ -22,7 +22,7 @@ public class PurchaseRequestAlarmPublisher implements AlarmPublisher<DelaySendAl
 	}
 
 	@Override
-	public void sendAlarm(DelaySendAlarmRequest request) {
+	public void sendAlarm(DelayAlarmEvent request) {
 		messagingTemplate.convertAndSendToUser(
 				request.targetId().toString(), ALARM_DESTINATION, request.type());
 		log.info("[즉시 알람 전송] - [{}]", LocalDateTime.now());

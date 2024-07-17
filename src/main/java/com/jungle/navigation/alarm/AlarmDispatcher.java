@@ -1,7 +1,7 @@
 package com.jungle.navigation.alarm;
 
 import com.jungle.navigation.alarm.domain.AlarmType;
-import com.jungle.navigation.alarm.dto.SendAlarmRequest;
+import com.jungle.navigation.alarm.event.AlarmEvent;
 import com.jungle.navigation.alarm.pub.AlarmPublisher;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ public class AlarmDispatcher {
 				publishers.stream().collect(Collectors.toMap(AlarmPublisher::support, Function.identity()));
 	}
 
-	public void dispatchAlarm(SendAlarmRequest request) {
+	public void dispatchAlarm(AlarmEvent request) {
 		AlarmPublisher publisher = getAlarmPublisher(request.type());
 		publisher.sendAlarm(request);
 	}
