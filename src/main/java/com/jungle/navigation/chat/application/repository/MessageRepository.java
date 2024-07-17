@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface MessageRepository {
-	Slice<Message> findByRoomIdOrderBySendTimeAsc(Long memberId, Pageable pageable);
+	Slice<Message> findAllByRoomId(Long roomId, Pageable pageable);
 
 	Message save(final Message message);
 
