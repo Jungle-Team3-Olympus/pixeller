@@ -1,4 +1,4 @@
-package com.jungle.navigation.alarm;
+package com.jungle.navigation.alarm.domain;
 
 import com.jungle.navigation.common.helper.TimeHelper;
 import java.sql.Timestamp;

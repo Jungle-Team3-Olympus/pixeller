@@ -4,7 +4,7 @@ import static com.jungle.navigation.alarm.config.RMQProperties.WAITING_EXCHANGE_
 import static com.jungle.navigation.alarm.config.RMQProperties.WAITING_ROUTING_KEY;
 
 import com.jungle.navigation.alarm.Alarm;
-import com.jungle.navigation.alarm.AlarmScheduler;
+import com.jungle.navigation.alarm.domain.AlarmScheduler;
 import com.jungle.navigation.alarm.domain.AlarmType;
 import com.jungle.navigation.alarm.event.DelayAlarmEvent;
 import java.time.LocalDateTime;
