@@ -2,7 +2,8 @@ package com.jungle.navigation.alarm.event;
 
 import com.jungle.navigation.alarm.domain.AlarmType;
 
-public record WishPurchaseEvent(Long targetId, Long productId) implements AlarmEvent {
+public record WishPurchaseEvent(String type, Long targetId, Long productId, String productName)
+		implements AlarmEvent {
 	@Override
 	public String type() {
 		return AlarmType.PURCHASE_REQUEST.getType();
@@ -16,5 +17,10 @@ public record WishPurchaseEvent(Long targetId, Long productId) implements AlarmE
 	@Override
 	public Long productId() {
 		return productId;
+	}
+
+	public static WishPurchaseEvent of(Long targetId, Long productId, String productName) {
+		return new WishPurchaseEvent(
+				AlarmType.PURCHASE_REQUEST.getType(), targetId, productId, productName);
 	}
 }

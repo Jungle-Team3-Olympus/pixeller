@@ -7,4 +7,6 @@ public interface AlarmEvent {
 	Long targetId();
 
 	Long productId();
+
+	String productName();
 }

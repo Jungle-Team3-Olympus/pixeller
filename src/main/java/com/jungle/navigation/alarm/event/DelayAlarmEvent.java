@@ -3,7 +3,8 @@ package com.jungle.navigation.alarm.event;
 import com.jungle.navigation.alarm.domain.AlarmType;
 import java.sql.Timestamp;
 
-public record DelayAlarmEvent(Long targetId, Long productId, Timestamp targetTime)
+public record DelayAlarmEvent(
+		String type, Long targetId, Long productId, String productName, Timestamp targetTime)
 		implements AlarmEvent {
 
 	@Override
@@ -19,5 +20,16 @@ public record DelayAlarmEvent(Long targetId, Long productId, Timestamp targetTim
 	@Override
 	public Long productId() {
 		return productId;
+	}
+
+	@Override
+	public String productName() {
+		return productName;
+	}
+
+	public static DelayAlarmEvent of(
+			Long targetId, Long productId, String productName, Timestamp targetTime) {
+		return new DelayAlarmEvent(
+				AlarmType.AUCTION_START.getType(), targetId, productId, productName, targetTime);
 	}
 }
