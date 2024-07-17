@@ -46,6 +46,10 @@ public class Message {
 	@Column(name = "send_time")
 	private Timestamp sendTime = new Timestamp(System.currentTimeMillis());
 
+	public static Message of(Long roomId, Long memberId, String content) {
+		return Message.builder().roomId(roomId).senderId(memberId).content(content).build();
+	}
+
 	public void readMessage(Long readerId) {
 		if (isReader(readerId)) {
 			readCount -= 1;
