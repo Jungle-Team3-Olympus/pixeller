@@ -5,25 +5,20 @@ import static com.jungle.navigation.chat.presentation.support.ChatConstants.MEMB
 import static com.jungle.navigation.chat.support.WebSocketConstant.SUBSCRIBE;
 
 import com.jungle.navigation.chat.application.ChatService;
+import com.jungle.navigation.chat.presentation.dto.request.GetPagesRequest;
 import com.jungle.navigation.chat.presentation.dto.request.SendMessageRequest;
+import com.jungle.navigation.chat.presentation.dto.response.EachMessage;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
-import com.jungle.navigation.chat.presentation.dto.response.MessagesResponse;
 import com.jungle.navigation.chat.presentation.dto.response.ReadMessageResponse;
-import com.jungle.navigation.chat.presentation.support.RoomSuccessMessageCode;
 import com.jungle.navigation.chat.presentation.support.SessionManager;
-import com.jungle.navigation.common.presentation.respnose.ApiResponse;
-import com.jungle.navigation.common.presentation.respnose.ApiResponseBody.SuccessBody;
-import com.jungle.navigation.common.presentation.respnose.ApiResponseGenerator;
+import com.jungle.navigation.common.presentation.respnose.SliceResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -75,7 +70,7 @@ public class ChatController {
 	 * @param headerAccessor
 	 * @param request
 	 */
-	@MessageMapping("/message/direct/{roomId}")
+	@MessageMapping("/message/direct/{roomId}/send")
 	public void sendDirectMessageToRoom(
 			@DestinationVariable("roomId") Long roomId,
 			SimpMessageHeaderAccessor headerAccessor,
@@ -100,18 +95,11 @@ public class ChatController {
 				SUBSCRIBE + "/message/direct/" + response.chatRoomId(), response);
 	}
 
-	/**
-	 * 해당 방의 메시지들을 가져온다
-	 *
-	 * @param roomId
-	 * @return
-	 */
-	@GetMapping("/api/chat-room/{roomId}")
-	public ApiResponse<SuccessBody<MessagesResponse>> getMessageByRoom(
-			@PathVariable("roomId") Long roomId,
-			@RequestParam(required = false, defaultValue = "0", value = "page") int pageNumber,
-			@RequestParam(required = false, defaultValue = "10", value = "size") int pageSize) {
-		MessagesResponse response = chatService.findByChatRoomId(roomId, pageNumber, pageSize);
-		return ApiResponseGenerator.success(response, HttpStatus.OK, RoomSuccessMessageCode.GET_ROOM);
+	/** 해당 방의 메시지를 가져온다 */
+	@SubscribeMapping("/message/direct/{roomId}")
+	public SliceResponse<EachMessage> getMessageByRoom(
+			@DestinationVariable Long roomId, @Payload GetPagesRequest request) {
+
+		return chatService.findByChatRoomId(roomId, request.page(), request.size());
 	}
 }
