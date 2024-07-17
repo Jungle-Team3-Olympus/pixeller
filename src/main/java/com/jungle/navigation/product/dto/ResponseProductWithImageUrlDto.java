@@ -21,7 +21,8 @@ public class ResponseProductWithImageUrlDto {
 	private Timestamp auctionStartTime;
 
 	public static record MemberDto(
-			int id,
+			int memberId,
+			String id,
 			char userType,
 			float x,
 			float y,
