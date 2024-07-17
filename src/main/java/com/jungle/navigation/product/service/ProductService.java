@@ -1,5 +1,6 @@
 package com.jungle.navigation.product.service;
 
+import com.jungle.navigation.alarm.event.DelayAlarmEvent;
 import com.jungle.navigation.common.exception.BusinessException;
 import com.jungle.navigation.member.MemberEntity;
 import com.jungle.navigation.member.MemberJpaRepository;
@@ -17,6 +18,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +28,18 @@ public class ProductService {
 	private final ProductsRepository productsRepository;
 	private final FileRepository fileRepository;
 	private final MemberJpaRepository memberJpaRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Autowired
 	public ProductService(
 			ProductsRepository productsRepository,
 			FileRepository fileRepository,
-			MemberJpaRepository memberJpaRepository) {
+			MemberJpaRepository memberJpaRepository,
+			ApplicationEventPublisher eventPublisher) {
 		this.productsRepository = productsRepository;
 		this.fileRepository = fileRepository;
 		this.memberJpaRepository = memberJpaRepository;
+		this.eventPublisher = eventPublisher;
 	}
 
 	// 상품 등록
@@ -57,6 +62,9 @@ public class ProductService {
 
 		saveImage(requestProductDto.files(), newProduct.getProductId());
 
+		eventPublisher.publishEvent(
+				new DelayAlarmEvent(
+						memberId, Long.valueOf(newProduct.getProductId()), newProduct.getAuctionStartTime()));
 		return newProduct;
 	}
 
