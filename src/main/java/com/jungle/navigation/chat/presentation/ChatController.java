@@ -2,12 +2,17 @@ package com.jungle.navigation.chat.presentation;
 
 import static com.jungle.navigation.chat.presentation.support.ChatConstants.MEMBER_ID;
 import static com.jungle.navigation.chat.presentation.support.ChatConstants.MEMBER_NAME;
-import static com.jungle.navigation.chat.support.WebSocketConstant.SUBSCRIBE;
+import static com.jungle.navigation.chat.support.WebSocketEndpoints.SUBSCRIBE;
+import static com.jungle.navigation.chat.support.WebSocketEndpoints.getDirectMessageDestination;
 
 import com.jungle.navigation.chat.application.ChatService;
+import com.jungle.navigation.chat.presentation.dto.request.GetPagesRequest;
 import com.jungle.navigation.chat.presentation.dto.request.SendMessageRequest;
+import com.jungle.navigation.chat.presentation.dto.response.EachMessage;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
+import com.jungle.navigation.chat.presentation.dto.response.ReadMessageResponse;
 import com.jungle.navigation.chat.presentation.support.SessionManager;
+import com.jungle.navigation.common.presentation.respnose.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -36,7 +41,8 @@ public class ChatController {
 	@MessageMapping("/message/" + PUBLIC_ROOM_UUID + "/enter")
 	public void sendWelcomeMessage(SimpMessageHeaderAccessor headerAccessor) {
 		String enterName = sessionManager.getValue(headerAccessor, MEMBER_NAME, String.class);
-		MessageResponse response = MessageResponse.of(1L, enterName, WELCOME_MESSAGE);
+		MessageResponse response = MessageResponse.of(1L, enterName, enterName + WELCOME_MESSAGE);
+
 		messagingTemplate.convertAndSend(SUB_PUBLIC_ROOM, response);
 	}
 
@@ -50,13 +56,8 @@ public class ChatController {
 	@MessageMapping("/message/" + PUBLIC_ROOM_UUID)
 	public void sendPublicMessage(
 			SimpMessageHeaderAccessor headerAccessor, @Payload SendMessageRequest request) {
-
-		Long senderId = sessionManager.getValue(headerAccessor, MEMBER_ID, Long.class);
 		String senderName = sessionManager.getValue(headerAccessor, MEMBER_NAME, String.class);
-
-		MessageResponse response =
-				chatService.createPublicMessage(
-						senderId, senderName, Long.valueOf(PUBLIC_ROOM_UUID), request);
+		MessageResponse response = MessageResponse.of(1L, senderName, request.content());
 
 		messagingTemplate.convertAndSend(SUB_PUBLIC_ROOM, response);
 	}
@@ -64,13 +65,13 @@ public class ChatController {
 	/**
 	 * pub : pub/message/direct/{roomId} sub : sub/message/direct/{roomId}
 	 *
-	 * <p>direct message 전송
+	 * <p>특정 room에 direct message 전송
 	 *
 	 * @param headerAccessor
 	 * @param request
 	 */
-	@MessageMapping("/message/direct/{roomId}")
-	public void sendDirectMessage(
+	@MessageMapping("/message/direct/{roomId}/send")
+	public void sendDirectMessageToRoom(
 			@DestinationVariable("roomId") Long roomId,
 			SimpMessageHeaderAccessor headerAccessor,
 			@Payload SendMessageRequest request) {
@@ -80,6 +81,25 @@ public class ChatController {
 
 		MessageResponse response =
 				chatService.createDirectMessage(senderId, senderName, roomId, request);
-		messagingTemplate.convertAndSend(SUBSCRIBE + "/message/direct/" + roomId, response);
+		messagingTemplate.convertAndSend(getDirectMessageDestination(roomId), response);
+	}
+
+	/** 메시지 읽음 표시 */
+	@MessageMapping("/message/{messageId}/read")
+	public void readMessage(
+			@DestinationVariable("messageId") Long messageId, SimpMessageHeaderAccessor headerAccessor) {
+		Long readerId = sessionManager.getValue(headerAccessor, MEMBER_ID, Long.class);
+
+		ReadMessageResponse response = chatService.readMessage(readerId, messageId);
+		messagingTemplate.convertAndSend(getDirectMessageDestination(response.chatRoomId()), response);
+	}
+
+	/** 해당 방의 메시지를 가져온다 */
+	@MessageMapping("/message/direct/{roomId}")
+	public void getMessageByRoom(@DestinationVariable Long roomId, @Payload GetPagesRequest request) {
+
+		SliceResponse<EachMessage> response =
+				chatService.findByChatRoomId(roomId, request.page(), request.size());
+		messagingTemplate.convertAndSend(getDirectMessageDestination(roomId), response);
 	}
 }

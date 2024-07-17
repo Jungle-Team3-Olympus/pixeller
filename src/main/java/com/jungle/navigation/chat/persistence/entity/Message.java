@@ -24,6 +24,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = Message.PREFIX)
 public class Message {
 	public static final String PREFIX = "messages";
+	private static final int DIRECT_DEFAULT_COUNT = 2;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +41,24 @@ public class Message {
 	private String content;
 
 	@Builder.Default
+	@Column(name = "read_count")
+	private int readCount = DIRECT_DEFAULT_COUNT;
+
+	@Builder.Default
 	@Column(name = "send_time")
 	private Timestamp sendTime = new Timestamp(System.currentTimeMillis());
+
+	public static Message of(Long roomId, Long memberId, String content) {
+		return Message.builder().roomId(roomId).senderId(memberId).content(content).build();
+	}
+
+	public void readMessage(Long readerId) {
+		if (isReader(readerId)) {
+			readCount -= 1;
+		}
+	}
+
+	private boolean isReader(Long readerId) {
+		return !senderId.equals(readerId);
+	}
 }

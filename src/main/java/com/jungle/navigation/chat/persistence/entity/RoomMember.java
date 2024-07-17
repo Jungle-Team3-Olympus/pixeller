@@ -33,4 +33,12 @@ public class RoomMember {
 
 	@Column(name = "room_id")
 	private Long chatRoomId;
+
+	public static RoomMember of(Long memberId, Long chatRoomId) {
+		return RoomMember.builder().memberId(memberId).chatRoomId(chatRoomId).build();
+	}
+
+	public boolean isSameMember(Long id) {
+		return !memberId.equals(id);
+	}
 }

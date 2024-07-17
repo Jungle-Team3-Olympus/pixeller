@@ -16,4 +16,8 @@ public class SessionManager {
 
 		return (T) sessionAttributes.get(key);
 	}
+
+	public void setValue(SimpMessageHeaderAccessor headerAccessor, String key, Object value) {
+		headerAccessor.getSessionAttributes().put(key, value);
+	}
 }
