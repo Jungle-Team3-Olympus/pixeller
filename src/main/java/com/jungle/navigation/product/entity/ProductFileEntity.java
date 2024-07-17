@@ -13,9 +13,10 @@ public class ProductFileEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "file_id")
-	private int filedId;
+	private int fileId;
 
-	private char use_yn;
+	@Column(name = "use_yn")
+	private char useYn;
 
 	@Column(name = "file_name")
 	private String fileName;

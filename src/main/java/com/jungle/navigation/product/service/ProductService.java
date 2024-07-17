@@ -79,7 +79,7 @@ public class ProductService {
 			newFile.setFileName(file.filename());
 			newFile.setFilePath(file.path());
 			newFile.setProductId(productId);
-			newFile.setUse_yn('y');
+			newFile.setUseYn('y');
 			fileEntities.add(newFile);
 		}
 		fileRepository.saveAll(fileEntities);
@@ -108,9 +108,10 @@ public class ProductService {
 		existingProduct = productsRepository.save(existingProduct);
 
 		// 기존 이미지 파일 use_yn 속성을 'n'으로 변경
-		List<ProductFileEntity> existingFiles = fileRepository.findAllByProductId(productId);
+		List<ProductFileEntity> existingFiles =
+				fileRepository.findAllByProductIdAndUseYn(productId, 'y');
 		for (ProductFileEntity file : existingFiles) {
-			file.setUse_yn('n');
+			file.setUseYn('n');
 		}
 		fileRepository.saveAll(existingFiles);
 
@@ -137,9 +138,10 @@ public class ProductService {
 		existingProduct.setUseYn('n');
 		productsRepository.save(existingProduct);
 
-		List<ProductFileEntity> productFiles = fileRepository.findAllByProductId(productId);
+		List<ProductFileEntity> productFiles =
+				fileRepository.findAllByProductIdAndUseYn(productId, 'y');
 		for (ProductFileEntity file : productFiles) {
-			file.setUse_yn('n');
+			file.setUseYn('n');
 		}
 		fileRepository.saveAll(productFiles);
 	}
@@ -152,6 +154,12 @@ public class ProductService {
 
 		for (ProductEntity product : products) {
 			int productId = product.getProductId();
+
+			boolean productExists = productsRepository.existsById(productId);
+			if (!productExists) {
+				throw new BusinessException("Invalid productId " + productId);
+			}
+
 			AllProductWithImage.add(getProductWithImageUrlById(productId));
 		}
 		return AllProductWithImage;
@@ -172,9 +180,9 @@ public class ProductService {
 						.findById(productId)
 						.orElseThrow(() -> new BeansException("Product not found") {});
 
-		// product 에 딸린 이미지 파일들 리스트에 담아두기
-		List<ProductFileEntity> fileEntities = fileRepository.findByProductId(productId);
-
+		// product 에 딸린 이미지 파일 엔티티들 리스트에 담아두기
+		List<ProductFileEntity> fileEntities =
+				fileRepository.findAllByProductIdAndUseYn(productId, 'y');
 		// 이미지 파일경로들 list 에 저장
 		List<String> fileUrls =
 				fileEntities.stream()
