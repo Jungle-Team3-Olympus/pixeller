@@ -18,9 +18,9 @@ public class AlarmDispatcher {
 				publishers.stream().collect(Collectors.toMap(AlarmPublisher::support, Function.identity()));
 	}
 
-	public void dispatchAlarm(AlarmEvent request) {
-		AlarmPublisher publisher = getAlarmPublisher(request.type());
-		publisher.sendAlarm(request);
+	public void dispatchAlarm(AlarmEvent event) {
+		AlarmPublisher publisher = getAlarmPublisher(event.type());
+		publisher.sendAlarm(event);
 	}
 
 	private AlarmPublisher getAlarmPublisher(String type) {
