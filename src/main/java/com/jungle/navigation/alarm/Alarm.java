@@ -14,6 +14,6 @@ import lombok.ToString;
 public class Alarm implements Serializable {
 	@Serial private static final long serialVersionUID = -2825260350855140563L;
 
-	private Long userId;
+	private Long targetId;
 	private String alarmType;
 }
