@@ -16,4 +16,6 @@ public class Alarm implements Serializable {
 
 	private Long targetId;
 	private String alarmType;
+	private Long productId;
+	private String productName;
 }
