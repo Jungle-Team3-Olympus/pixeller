@@ -64,8 +64,11 @@ public class ProductService {
 		saveImage(requestProductDto.files(), newProduct.getProductId());
 
 		eventPublisher.publishEvent(
-				new DelayAlarmEvent(
-						memberId, Long.valueOf(newProduct.getProductId()), newProduct.getAuctionStartTime()));
+				DelayAlarmEvent.of(
+						memberId,
+						Long.valueOf(newProduct.getProductId()),
+						newProduct.getName(),
+						newProduct.getAuctionStartTime()));
 		return newProduct;
 	}
 

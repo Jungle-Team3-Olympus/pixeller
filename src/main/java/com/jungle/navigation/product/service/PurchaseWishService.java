@@ -44,11 +44,16 @@ public class PurchaseWishService {
 		purchaseWish.setProductId(productId);
 
 		eventPublisher.publishEvent(
-				new DelayAlarmEvent(
-						Long.valueOf(memberId), Long.valueOf(productId), productEntity.getAuctionStartTime()));
+				DelayAlarmEvent.of(
+						Long.valueOf(memberId),
+						Long.valueOf(productId),
+						productEntity.getName(),
+						productEntity.getAuctionStartTime()));
 		eventPublisher.publishEvent(
-				new WishPurchaseEvent(
-						Long.valueOf(productEntity.getMemberId()), Long.valueOf(Long.valueOf(productId))));
+				WishPurchaseEvent.of(
+						Long.valueOf(productEntity.getMemberId()),
+						Long.valueOf(Long.valueOf(productId)),
+						productEntity.getName()));
 
 		return purchaseWishRepository.save(purchaseWish);
 	}

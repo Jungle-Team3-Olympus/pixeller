@@ -28,7 +28,12 @@ public class AuctionStartAlarmPublisher implements AlarmPublisher<DelayAlarmEven
 
 	@Override
 	public void sendAlarm(@RequestBody DelayAlarmEvent event) {
-		Alarm alarm = new Alarm(event.targetId(), AlarmType.AUCTION_START.name());
+		Alarm alarm =
+				new Alarm(
+						event.targetId(),
+						AlarmType.AUCTION_START.name(),
+						event.productId(),
+						event.productName());
 		AlarmScheduler alarmScheduler = new AlarmScheduler(event.targetTime());
 
 		this.rabbitTemplate.convertAndSend(
@@ -40,7 +45,7 @@ public class AuctionStartAlarmPublisher implements AlarmPublisher<DelayAlarmEven
 							.getMessageProperties()
 							.setHeader(
 									AbstractJavaTypeMapper.DEFAULT_CONTENT_CLASSID_FIELD_NAME, Alarm.class.getName());
-					message.getMessageProperties().setExpiration(alarmScheduler.getDiff());
+					message.getMessageProperties().setExpiration(alarmScheduler.getTimeToLive());
 					return message;
 				});
 		log.info("[지연 알람 예약] - [{}]", LocalDateTime.now());
