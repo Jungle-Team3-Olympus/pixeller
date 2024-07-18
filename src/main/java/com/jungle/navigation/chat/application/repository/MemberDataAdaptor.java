@@ -13,7 +13,8 @@ public class MemberDataAdaptor {
 	private final MemberJpaRepository memberRepository;
 
 	public List<MemberData> memberData(List<Long> memberIds) {
-		List<MemberEntity> memberEntities = memberRepository.findAllByIdIn(getMemberIds(memberIds));
+		List<MemberEntity> memberEntities =
+				memberRepository.findAllByMemberIdIn(getMemberIds(memberIds));
 
 		return memberEntities.stream()
 				.map(member -> MemberData.of(member.getMemberId(), member.getUsername()))

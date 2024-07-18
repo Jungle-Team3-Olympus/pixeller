@@ -4,6 +4,7 @@ import com.jungle.navigation.auth.presentation.support.Member;
 import com.jungle.navigation.auth.presentation.support.MemberInfo;
 import com.jungle.navigation.product.dto.RequestEditDto;
 import com.jungle.navigation.product.dto.RequestProductDto;
+import com.jungle.navigation.product.dto.RequestSellerCheckDto;
 import com.jungle.navigation.product.dto.ResponseProductWithImageUrlDto;
 import com.jungle.navigation.product.entity.ProductEntity;
 import com.jungle.navigation.product.service.ProductService;
@@ -63,5 +64,13 @@ public class ProductsController {
 	public ResponseEntity<Void> deleteProduct(@PathVariable("productId") int productId) {
 		productService.deleteProduct(productId);
 		return ResponseEntity.noContent().build();
+	}
+
+	// 판매자가 맞는지 확인
+	@PostMapping("/check")
+	public ResponseEntity<Boolean> checkSeller(
+			@RequestBody RequestSellerCheckDto requestSellerCheckDto) {
+
+		return ResponseEntity.ok(productService.checkUserEqualSeller(requestSellerCheckDto));
 	}
 }
