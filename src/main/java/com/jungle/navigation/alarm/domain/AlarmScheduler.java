@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 public class AlarmScheduler {
+	private static final long ONE_MINUTE_BEFORE_ALARM = 60000;
+
 	private long currentTime;
 	private long targetTime;
 
@@ -23,13 +25,21 @@ public class AlarmScheduler {
 	}
 
 	private void validateTime(long now, long targetTime) {
-		if (now >= targetTime) {
-			throw new IllegalArgumentException("[Alarm] Invalid time");
+		if (isOneMinuteBefore(now, targetTime)) {
+			throw new IllegalArgumentException(
+					"[Alarm] Invalid time: Less than one minute before target time");
 		}
 	}
 
-	public String getDiff() {
-		long diffTime = targetTime - currentTime;
+	public String getTimeToLive() {
+		long diffTime = (targetTime - currentTime) - ONE_MINUTE_BEFORE_ALARM;
+		log.info("diffTime: " + diffTime);
 		return String.valueOf(diffTime);
+	}
+
+	public boolean isOneMinuteBefore(long now, long targetTime) {
+		log.info("target time" + targetTime);
+		log.info("now" + now);
+		return (targetTime - currentTime) <= ONE_MINUTE_BEFORE_ALARM;
 	}
 }
