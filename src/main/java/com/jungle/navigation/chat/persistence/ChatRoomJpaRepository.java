@@ -26,9 +26,7 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoom, Long>, Ch
 					+ "FROM RoomMember rm "
 					+ "JOIN ChatRoom r ON rm.chatRoomId = r.id "
 					+ "WHERE r.roomType = :roomType "
-					+ "AND (rm.memberId = :senderId OR rm.memberId = :receiverId) "
-					+ "GROUP BY r.id "
-					+ "HAVING COUNT(DISTINCT rm.memberId) = 2")
+					+ "AND (rm.memberId = :senderId OR rm.memberId = :receiverId)")
 	ChatRoom findCommonChatRoom(
 			@Param("senderId") Long senderId,
 			@Param("receiverId") Long receiverId,
