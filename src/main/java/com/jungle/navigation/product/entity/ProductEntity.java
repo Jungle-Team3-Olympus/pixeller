@@ -12,6 +12,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "product")
 @ToString
+@Builder
 public class ProductEntity {
 
 	@Id
