@@ -2,8 +2,10 @@ package com.jungle.navigation.product.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -13,6 +15,8 @@ import lombok.ToString;
 @Table(name = "product")
 @ToString
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductEntity {
 
 	@Id
