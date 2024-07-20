@@ -11,7 +11,7 @@ import lombok.Setter;
 @Table(name = "file")
 public class ProductFileEntity {
 	private static final char SELLING_PRODUCT_IMAGE = 'y';
-	private static final char NOT_SELLING_PRODUCT_IMAGE='n';
+	private static final char NOT_SELLING_PRODUCT_IMAGE = 'n';
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

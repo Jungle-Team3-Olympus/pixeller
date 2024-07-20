@@ -1,6 +1,5 @@
 package com.jungle.navigation.product.service;
 
-import com.jungle.navigation.alarm.event.DelayAlarmEvent;
 import com.jungle.navigation.common.exception.BusinessException;
 import com.jungle.navigation.member.MemberEntity;
 import com.jungle.navigation.member.MemberJpaRepository;
@@ -12,14 +11,10 @@ import com.jungle.navigation.product.entity.ProductEntity;
 import com.jungle.navigation.product.entity.ProductFileEntity;
 import com.jungle.navigation.product.repository.FileRepository;
 import com.jungle.navigation.product.repository.ProductsRepository;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

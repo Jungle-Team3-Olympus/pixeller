@@ -1,21 +1,18 @@
 package com.jungle.navigation.product.entity;
 
-import com.jungle.navigation.common.persistence.BaseEntity;
 import jakarta.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "product")
 @ToString
-public class ProductEntity{
+public class ProductEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +36,7 @@ public class ProductEntity{
 
 	@Builder.Default
 	@Column(name = "sale_yn")
-	private char saleYn ='n';
+	private char saleYn = 'n';
 
 	@Builder.Default
 	@Column(name = "use_yn")
