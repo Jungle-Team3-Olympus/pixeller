@@ -1,7 +1,5 @@
 package com.jungle.navigation.product.service;
 
-import com.jungle.navigation.alarm.event.DelayAlarmEvent;
-import com.jungle.navigation.alarm.event.WishPurchaseEvent;
 import com.jungle.navigation.common.exception.BusinessException;
 import com.jungle.navigation.member.MemberJpaRepository;
 import com.jungle.navigation.product.dto.ResponsePurchaseWishListDto;
@@ -44,18 +42,6 @@ public class PurchaseWishService {
 		PurchaseWishEntity purchaseWish = new PurchaseWishEntity();
 		purchaseWish.setMemberId(Math.toIntExact(memberId));
 		purchaseWish.setProductId(productId);
-
-		eventPublisher.publishEvent(
-				DelayAlarmEvent.of(
-						Long.valueOf(memberId),
-						Long.valueOf(productId),
-						productEntity.getName(),
-						productEntity.getAuctionStartTime()));
-		eventPublisher.publishEvent(
-				WishPurchaseEvent.of(
-						Long.valueOf(productEntity.getMemberId()),
-						Long.valueOf(Long.valueOf(productId)),
-						productEntity.getName()));
 
 		return purchaseWishRepository.save(purchaseWish);
 	}

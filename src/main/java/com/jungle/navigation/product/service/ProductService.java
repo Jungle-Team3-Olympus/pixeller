@@ -1,6 +1,5 @@
 package com.jungle.navigation.product.service;
 
-import com.jungle.navigation.alarm.event.DelayAlarmEvent;
 import com.jungle.navigation.common.exception.BusinessException;
 import com.jungle.navigation.member.MemberEntity;
 import com.jungle.navigation.member.MemberJpaRepository;
@@ -12,14 +11,10 @@ import com.jungle.navigation.product.entity.ProductEntity;
 import com.jungle.navigation.product.entity.ProductFileEntity;
 import com.jungle.navigation.product.repository.FileRepository;
 import com.jungle.navigation.product.repository.ProductsRepository;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,46 +24,28 @@ public class ProductService {
 	private final ProductsRepository productsRepository;
 	private final FileRepository fileRepository;
 	private final MemberJpaRepository memberJpaRepository;
-	private final ApplicationEventPublisher eventPublisher;
 
 	@Autowired
 	public ProductService(
 			ProductsRepository productsRepository,
 			FileRepository fileRepository,
-			MemberJpaRepository memberJpaRepository,
-			ApplicationEventPublisher eventPublisher) {
+			MemberJpaRepository memberJpaRepository) {
 		this.productsRepository = productsRepository;
 		this.fileRepository = fileRepository;
 		this.memberJpaRepository = memberJpaRepository;
-		this.eventPublisher = eventPublisher;
 	}
 
 	// 상품 등록
 	@Transactional
 	public ProductEntity registerProduct(RequestProductDto requestProductDto, Long memberId) {
-		Timestamp createdAt = Timestamp.valueOf(LocalDateTime.now());
-
 		ProductEntity newProduct = new ProductEntity();
 		newProduct.setMemberId(memberId);
 		newProduct.setName(requestProductDto.name());
-		newProduct.setCategory(requestProductDto.category());
 		newProduct.setPrice(requestProductDto.price());
 		newProduct.setDescription(requestProductDto.description());
-		newProduct.setAuctionStartTime(requestProductDto.auctionStartTime());
-		newProduct.setCreatedAt(createdAt);
-		newProduct.setSaleYn('n');
-		newProduct.setUseYn('y');
 
 		newProduct = productsRepository.save(newProduct);
-
 		saveImage(requestProductDto.files(), newProduct.getProductId());
-
-		eventPublisher.publishEvent(
-				DelayAlarmEvent.of(
-						memberId,
-						Long.valueOf(newProduct.getProductId()),
-						newProduct.getName(),
-						newProduct.getAuctionStartTime()));
 		return newProduct;
 	}
 
@@ -84,7 +61,7 @@ public class ProductService {
 		fileRepository.saveAll(fileEntities);
 	}
 
-	private static @NotNull List<ProductFileEntity> getFileEntities(
+	private static List<ProductFileEntity> getFileEntities(
 			List<RequestProductDto.File> files, int productId) {
 		List<ProductFileEntity> fileEntities = new ArrayList<>();
 		String basePath = "https://product-image-kfc.s3.ap-northeast-2.amazonaws.com/images/";
@@ -92,12 +69,10 @@ public class ProductService {
 			if (!file.path().startsWith(basePath)) {
 				throw new BusinessException("Invalid image file path");
 			}
-
 			ProductFileEntity newFile = new ProductFileEntity();
 			newFile.setFileName(file.filename());
 			newFile.setFilePath(file.path());
 			newFile.setProductId(productId);
-			newFile.setUseYn('y');
 			fileEntities.add(newFile);
 		}
 		return fileEntities;
@@ -118,10 +93,8 @@ public class ProductService {
 						.orElseThrow(() -> new BusinessException("Product not found"));
 
 		existingProduct.setName(requestEditDto.name());
-		existingProduct.setCategory(requestEditDto.category());
 		existingProduct.setPrice(requestEditDto.price());
 		existingProduct.setDescription(requestEditDto.description());
-		existingProduct.setAuctionStartTime(existingProduct.getAuctionStartTime()); // 수정은 경매시작시간 변경 x
 
 		existingProduct = productsRepository.save(existingProduct);
 
@@ -226,12 +199,10 @@ public class ProductService {
 		responseProductWithImageUrlDto.setProductId(product.getProductId());
 		responseProductWithImageUrlDto.setImageFileUrls(fileUrls);
 		responseProductWithImageUrlDto.setName(product.getName());
-		responseProductWithImageUrlDto.setCategory(product.getCategory());
 		responseProductWithImageUrlDto.setPrice(product.getPrice());
 		responseProductWithImageUrlDto.setDescription(product.getDescription());
 		responseProductWithImageUrlDto.setSaleYn(product.getSaleYn());
 		responseProductWithImageUrlDto.setUseYn(product.getUseYn());
-		responseProductWithImageUrlDto.setAuctionStartTime(product.getAuctionStartTime());
 		responseProductWithImageUrlDto.setMemberDto(memberDto);
 		return responseProductWithImageUrlDto;
 	}
