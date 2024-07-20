@@ -45,18 +45,6 @@ public class PurchaseWishService {
 		purchaseWish.setMemberId(Math.toIntExact(memberId));
 		purchaseWish.setProductId(productId);
 
-		eventPublisher.publishEvent(
-				DelayAlarmEvent.of(
-						Long.valueOf(memberId),
-						Long.valueOf(productId),
-						productEntity.getName(),
-						productEntity.getAuctionStartTime()));
-		eventPublisher.publishEvent(
-				WishPurchaseEvent.of(
-						Long.valueOf(productEntity.getMemberId()),
-						Long.valueOf(Long.valueOf(productId)),
-						productEntity.getName()));
-
 		return purchaseWishRepository.save(purchaseWish);
 	}
 

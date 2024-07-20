@@ -1,17 +1,21 @@
 package com.jungle.navigation.product.entity;
 
+import com.jungle.navigation.common.persistence.BaseEntity;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "product")
 @ToString
-public class ProductEntity {
+public class ProductEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,24 +28,22 @@ public class ProductEntity {
 	@Column(name = "product_name")
 	private String name;
 
-	private String category;
-
 	private int price;
 
 	@Column(columnDefinition = "TEXT")
 	private String description;
 
-	@Column(name = "reg_date")
-	private Timestamp createdAt;
+	@Builder.Default
+	@Column(nullable = false, updatable = false, name = "reg_date")
+	private LocalDateTime createdAt = LocalDateTime.now();
 
+	@Builder.Default
 	@Column(name = "sale_yn")
-	private char saleYn;
+	private char saleYn ='n';
 
+	@Builder.Default
 	@Column(name = "use_yn")
-	private char useYn;
-
-	@Column(name = "auction_start_time")
-	private Timestamp auctionStartTime;
+	private char useYn = 'y';
 
 	public void setMemberId(Long memberId) {
 		this.memberId = Math.toIntExact(memberId);
