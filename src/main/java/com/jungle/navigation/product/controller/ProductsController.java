@@ -73,4 +73,11 @@ public class ProductsController {
 
 		return ResponseEntity.ok(productService.checkUserEqualSeller(requestSellerCheckDto));
 	}
+
+	@GetMapping("/my")
+	public ResponseEntity<List<ProductEntity>> getProducts(@Member MemberInfo memberInfo) {
+		List<ProductEntity> response = productService.getProductByMember(memberInfo.getMemberId());
+
+		return ResponseEntity.ok(response);
+	}
 }

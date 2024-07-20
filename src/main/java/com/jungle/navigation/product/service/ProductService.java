@@ -224,4 +224,8 @@ public class ProductService {
 
 		return Objects.equals(sellerId, requestSellerCheckDto.id());
 	}
+
+	public List<ProductEntity> getProductByMember(Long memberId) {
+		return productsRepository.findByMemberId(memberId);
+	}
 }
