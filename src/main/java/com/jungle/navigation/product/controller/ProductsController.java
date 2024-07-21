@@ -75,8 +75,10 @@ public class ProductsController {
 	}
 
 	@GetMapping("/my")
-	public ResponseEntity<List<ProductEntity>> getProducts(@Member MemberInfo memberInfo) {
-		List<ProductEntity> response = productService.getProductByMember(memberInfo.getMemberId());
+	public ResponseEntity<List<ResponseProductWithImageUrlDto>> getProducts(
+			@Member MemberInfo memberInfo) {
+		List<ResponseProductWithImageUrlDto> response =
+				productService.getProductByMember(memberInfo.getMemberId());
 
 		return ResponseEntity.ok(response);
 	}

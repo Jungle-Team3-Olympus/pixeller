@@ -1,7 +1,7 @@
 package com.jungle.navigation.alarm.pub;
 
-import static com.jungle.navigation.alarm.config.RMQProperties.WAITING_EXCHANGE_NAME;
-import static com.jungle.navigation.alarm.config.RMQProperties.WAITING_ROUTING_KEY;
+import static com.jungle.navigation.rabbitmq.config.RMQProperties.WAITING_EXCHANGE_NAME;
+import static com.jungle.navigation.rabbitmq.config.RMQProperties.WAITING_ROUTING_KEY;
 
 import com.jungle.navigation.alarm.Alarm;
 import com.jungle.navigation.alarm.domain.AlarmScheduler;

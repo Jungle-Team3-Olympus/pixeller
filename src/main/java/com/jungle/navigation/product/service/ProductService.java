@@ -225,7 +225,9 @@ public class ProductService {
 		return Objects.equals(sellerId, requestSellerCheckDto.id());
 	}
 
-	public List<ProductEntity> getProductByMember(Long memberId) {
-		return productsRepository.findByMemberId(memberId);
+	public List<ResponseProductWithImageUrlDto> getProductByMember(Long memberId) {
+		return productsRepository.findByMemberId(memberId).stream()
+				.map(product -> getProductWithImageUrlById(product.getProductId()))
+				.toList();
 	}
 }

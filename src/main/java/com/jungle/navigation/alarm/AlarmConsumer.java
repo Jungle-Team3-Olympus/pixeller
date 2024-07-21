@@ -1,7 +1,7 @@
 package com.jungle.navigation.alarm;
 
-import static com.jungle.navigation.alarm.config.RMQProperties.ALARM_QUEUE_NAME;
 import static com.jungle.navigation.alarm.pub.AlarmConstant.getAlarmDestination;
+import static com.jungle.navigation.rabbitmq.config.RMQProperties.ALARM_QUEUE_NAME;
 
 import com.rabbitmq.client.Channel;
 import java.io.IOException;
