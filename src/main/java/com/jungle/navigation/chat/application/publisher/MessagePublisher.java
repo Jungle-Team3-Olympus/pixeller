@@ -1,5 +1,5 @@
 package com.jungle.navigation.chat.application.publisher;
 
-public interface MessagePublisher<T> {
-	void send(String url, T message);
+public interface MessagePublisher {
+	void send(String url, Object message);
 }

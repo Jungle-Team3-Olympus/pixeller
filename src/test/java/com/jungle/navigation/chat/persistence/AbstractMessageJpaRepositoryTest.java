@@ -21,7 +21,7 @@ import org.springframework.data.domain.Sort.Direction;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class MessageJpaRepositoryTest {
+class AbstractMessageJpaRepositoryTest {
 
 	@Autowired private MessageJpaRepository messageRepository;
 
@@ -44,7 +44,7 @@ class MessageJpaRepositoryTest {
 				Message.builder()
 						.roomId(roomId1)
 						.senderId(memberId1)
-						.content("First Message")
+						.content("First AbstractMessage")
 						.sendTime(Timestamp.valueOf(LocalDateTime.now().minusHours(2)))
 						.build();
 
@@ -52,7 +52,7 @@ class MessageJpaRepositoryTest {
 				Message.builder()
 						.roomId(roomId2)
 						.senderId(memberId1)
-						.content("Second Message")
+						.content("Second AbstractMessage")
 						.sendTime(Timestamp.valueOf(LocalDateTime.now()))
 						.build();
 
@@ -92,7 +92,7 @@ class MessageJpaRepositoryTest {
 				Message.builder()
 						.roomId(roomId1)
 						.senderId(memberId1)
-						.content("First Message")
+						.content("First AbstractMessage")
 						.sendTime(Timestamp.valueOf(LocalDateTime.now().minusHours(2)))
 						.build();
 
@@ -100,7 +100,7 @@ class MessageJpaRepositoryTest {
 				Message.builder()
 						.roomId(roomId2)
 						.senderId(memberId1)
-						.content("Second Message")
+						.content("Second AbstractMessage")
 						.sendTime(Timestamp.valueOf(LocalDateTime.now()))
 						.build();
 
@@ -131,7 +131,7 @@ class MessageJpaRepositoryTest {
 				Message.builder()
 						.roomId(roomId)
 						.senderId(memberId1)
-						.content("First Message")
+						.content("First AbstractMessage")
 						.sendTime(Timestamp.valueOf(LocalDateTime.now().minusHours(2)))
 						.build();
 
@@ -139,7 +139,7 @@ class MessageJpaRepositoryTest {
 				Message.builder()
 						.roomId(roomId)
 						.senderId(memberId2)
-						.content("Second Message")
+						.content("Second AbstractMessage")
 						.sendTime(Timestamp.valueOf(LocalDateTime.now()))
 						.build();
 
@@ -158,7 +158,7 @@ class MessageJpaRepositoryTest {
 
 		assertThat(result).isNotNull();
 		assertThat(result.getContent()).hasSize(2);
-		assertThat(result.getContent().get(0).getContent()).isEqualTo("First Message");
-		assertThat(result.getContent().get(1).getContent()).isEqualTo("Second Message");
+		assertThat(result.getContent().get(0).getContent()).isEqualTo("First AbstractMessage");
+		assertThat(result.getContent().get(1).getContent()).isEqualTo("Second AbstractMessage");
 	}
 }
