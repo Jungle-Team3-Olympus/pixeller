@@ -7,4 +7,6 @@ public interface RoomMemberRepository {
 	RoomMember save(RoomMember roomMember);
 
 	List<RoomMember> findByChatRoomIdIn(List<Long> chatRoomIds);
+
+	List<RoomMember> findAllByChatRoomId(Long chatRoomId);
 }
