@@ -39,6 +39,8 @@ public class RoomController implements RoomApi {
 			@Member MemberInfo memberInfo, @PathVariable("oppositeId") Long oppositeId) {
 		RoomResponse response = roomService.createDirectRoom(memberInfo.getMemberId(), oppositeId);
 
+		messagingTemplate.convertAndSend("/sub/chat-room/info/" + memberInfo.getMemberId(), response);
+
 		return ApiResponseGenerator.success(
 				response, HttpStatus.OK, RoomSuccessMessageCode.CREATE_ROOM);
 	}
