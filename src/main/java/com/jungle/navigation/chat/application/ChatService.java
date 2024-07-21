@@ -1,5 +1,6 @@
 package com.jungle.navigation.chat.application;
 
+import static com.jungle.navigation.chat.support.WebSocketEndpoints.SUB_PUBLIC_ROOM;
 import static com.jungle.navigation.chat.support.WebSocketEndpoints.getDirectMessageDestination;
 import static com.jungle.navigation.chat.support.WebSocketEndpoints.getSubInfoDestination;
 
@@ -15,7 +16,6 @@ import com.jungle.navigation.chat.presentation.dto.request.SendMessageRequest;
 import com.jungle.navigation.chat.presentation.dto.response.EachMessage;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
 import com.jungle.navigation.chat.presentation.dto.response.ReadMessageResponse;
-import com.jungle.navigation.chat.support.WebSocketEndpoints;
 import com.jungle.navigation.common.exception.BusinessException;
 import com.jungle.navigation.common.presentation.respnose.SliceResponse;
 import java.util.List;
@@ -75,7 +75,7 @@ public class ChatService {
 
 	public void createPublicMessage(String senderName, SendMessageRequest request) {
 		MessageResponse message = MessageResponse.of(1L, senderName, request.content());
-		messagePublisher.send(WebSocketEndpoints.SUB_PUBLIC_ROOM, message);
+		messagePublisher.send(SUB_PUBLIC_ROOM, message);
 	}
 
 	private SliceResponse<EachMessage> getMessagesByRoom(Long roomId, int pageNumber, int pageSize) {
@@ -131,7 +131,7 @@ public class ChatService {
 		List<RoomMember> roomMembers =
 				roomMemberRepository.findAllByChatRoomId(roomId).stream()
 						.filter(roomMember -> roomMember.isOtherMember(senderId))
-						.collect(Collectors.toList());
+						.toList();
 
 		if (roomMembers.size() != DIRECT_CHAT_ROOM_LIMIT) {
 			throw new BusinessException(String.format("%s chat room에 2명 이상의 유저가 있습니다.", roomId));
