@@ -1,5 +1,8 @@
 package com.jungle.navigation.chat.application;
 
+import static com.jungle.navigation.chat.support.WebSocketEndpoints.getChatRoomsDestination;
+
+import com.jungle.navigation.chat.application.publisher.MessagePublisher;
 import com.jungle.navigation.chat.application.repository.ChatRoomRepository;
 import com.jungle.navigation.chat.application.repository.MemberDataAdaptor;
 import com.jungle.navigation.chat.application.repository.MessageRepository;
@@ -31,6 +34,7 @@ public class RoomService {
 	private final RoomMemberRepository roomMemberRepository;
 	private final MessageRepository messageRepository;
 	private final MemberDataAdaptor memberDataAdaptor;
+	private final MessagePublisher messagePublisher;
 
 	@Transactional
 	public RoomResponse createDirectRoom(Long senderId, Long oppositeId) {
@@ -45,7 +49,7 @@ public class RoomService {
 		return RoomResponse.of(commonChatRoom.getId());
 	}
 
-	public SliceResponse<GetChatRoomsResponse> getChatRooms(Long memberId, int page, int size) {
+	public void getChatRooms(Long memberId, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		Slice<Message> messages = messageRepository.findRoomsByMemberId(memberId, pageable);
 		Map<Long, String> oppositesName = getOppositeName(messages.getContent(), memberId);
@@ -61,8 +65,15 @@ public class RoomService {
 												message.getReadCount()))
 						.toList();
 
-		return SliceResponse.of(
-				response, messages.getNumber(), messages.getSize(), messages.isFirst(), messages.isLast());
+		SliceResponse<GetChatRoomsResponse> sliceResponse =
+				SliceResponse.of(
+						response,
+						messages.getNumber(),
+						messages.getSize(),
+						messages.isFirst(),
+						messages.isLast());
+
+		messagePublisher.send(getChatRoomsDestination(memberId), sliceResponse);
 	}
 
 	private Long createNewChatRoom(Long senderId, Long oppositeId) {
@@ -87,7 +98,7 @@ public class RoomService {
 
 	private Map<Long, Long> getOppositeMemberIds(List<RoomMember> roomMembers, Long memberId) {
 		return roomMembers.stream()
-				.filter(member -> member.isSameMember(memberId))
+				.filter(member -> member.isOtherMember(memberId))
 				.collect(Collectors.toMap(RoomMember::getChatRoomId, RoomMember::getMemberId));
 	}
 

@@ -9,4 +9,6 @@ public interface RoomMemberJpaRepository
 		extends JpaRepository<RoomMember, Long>, RoomMemberRepository {
 
 	List<RoomMember> findByChatRoomIdIn(List<Long> chatRoomIds);
+
+	List<RoomMember> findAllByChatRoomId(Long chatRoomId);
 }
