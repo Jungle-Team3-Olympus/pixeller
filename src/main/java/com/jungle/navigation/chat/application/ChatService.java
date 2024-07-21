@@ -1,14 +1,22 @@
 package com.jungle.navigation.chat.application;
 
+import static com.jungle.navigation.chat.support.WebSocketEndpoints.getDirectMessageDestination;
+import static com.jungle.navigation.chat.support.WebSocketEndpoints.getSubInfoDestination;
+
+import com.jungle.navigation.chat.application.publisher.MessagePublisher;
 import com.jungle.navigation.chat.application.repository.ChatRoomRepository;
 import com.jungle.navigation.chat.application.repository.MemberDataAdaptor;
 import com.jungle.navigation.chat.application.repository.MessageRepository;
+import com.jungle.navigation.chat.application.repository.RoomMemberRepository;
 import com.jungle.navigation.chat.persistence.entity.ChatRoom;
 import com.jungle.navigation.chat.persistence.entity.Message;
+import com.jungle.navigation.chat.persistence.entity.RoomMember;
 import com.jungle.navigation.chat.presentation.dto.request.SendMessageRequest;
 import com.jungle.navigation.chat.presentation.dto.response.EachMessage;
 import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
 import com.jungle.navigation.chat.presentation.dto.response.ReadMessageResponse;
+import com.jungle.navigation.chat.support.WebSocketEndpoints;
+import com.jungle.navigation.common.exception.BusinessException;
 import com.jungle.navigation.common.presentation.respnose.SliceResponse;
 import java.util.List;
 import java.util.Map;
@@ -28,31 +36,46 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatService {
+	private static final int DIRECT_CHAT_ROOM_LIMIT = 2;
 	private final ChatRoomRepository chatRoomRepository;
 	private final MessageRepository messageRepository;
+	private final RoomMemberRepository roomMemberRepository;
 	private final MemberDataAdaptor memberDataAdaptor;
+	private final MessagePublisher messagePublisher;
 
 	@Transactional
-	public MessageResponse createDirectMessage(
+	public void createDirectMessage(
 			Long senderId, String senderName, Long roomId, SendMessageRequest request) {
 		validateExistChatRoom(roomId);
 		saveMessage(roomId, request, senderId);
+		RoomMember roomMember = getOppositeMemberId(roomId, senderId);
 
-		return MessageResponse.of(roomId, senderName, request.content());
+		MessageResponse response = MessageResponse.of(roomId, senderName, request.content());
+
+		messagePublisher.send(getDirectMessageDestination(roomId), response);
+		messagePublisher.send(getSubInfoDestination(roomMember.getMemberId()), response);
 	}
 
 	@Transactional
-	public ReadMessageResponse readMessage(Long readerId, Long messageId) {
+	public void readMessage(Long readerId, Long messageId) {
 		Message message = messageRepository.getById(messageId);
 		message.readMessage(readerId);
 
-		return new ReadMessageResponse(message.getRoomId(), messageId, message.getReadCount());
+		ReadMessageResponse response =
+				new ReadMessageResponse(message.getRoomId(), messageId, message.getReadCount());
+		messagePublisher.send(getDirectMessageDestination(response.chatRoomId()), response);
 	}
 
-	public SliceResponse<EachMessage> findByChatRoomId(
-			Long chatRoomId, int pageNumber, int pageSize) {
+	public void findByChatRoomId(Long chatRoomId, int pageNumber, int pageSize) {
 		chatRoomRepository.validateById(chatRoomId);
-		return getMessagesByRoom(chatRoomId, pageNumber, pageSize);
+		SliceResponse<EachMessage> response = getMessagesByRoom(chatRoomId, pageNumber, pageSize);
+
+		messagePublisher.send(getDirectMessageDestination(chatRoomId), response);
+	}
+
+	public void createPublicMessage(String senderName, SendMessageRequest request) {
+		MessageResponse message = MessageResponse.of(1L, senderName, request.content());
+		messagePublisher.send(WebSocketEndpoints.SUB_PUBLIC_ROOM, message);
 	}
 
 	private SliceResponse<EachMessage> getMessagesByRoom(Long roomId, int pageNumber, int pageSize) {
@@ -102,5 +125,18 @@ public class ChatService {
 
 	private void validateExistChatRoom(Long roomId) {
 		chatRoomRepository.validateById(roomId);
+	}
+
+	private RoomMember getOppositeMemberId(Long roomId, Long senderId) {
+		List<RoomMember> roomMembers =
+				roomMemberRepository.findAllByChatRoomId(roomId).stream()
+						.filter(roomMember -> roomMember.isOtherMember(senderId))
+						.collect(Collectors.toList());
+
+		if (roomMembers.size() != DIRECT_CHAT_ROOM_LIMIT) {
+			throw new BusinessException(String.format("%s chat room에 2명 이상의 유저가 있습니다.", roomId));
+		}
+
+		return roomMembers.get(0);
 	}
 }
