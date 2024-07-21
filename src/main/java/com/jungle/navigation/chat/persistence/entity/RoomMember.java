@@ -38,7 +38,7 @@ public class RoomMember {
 		return RoomMember.builder().memberId(memberId).chatRoomId(chatRoomId).build();
 	}
 
-	public boolean isSameMember(Long id) {
+	public boolean isOtherMember(Long id) {
 		return !memberId.equals(id);
 	}
 }
