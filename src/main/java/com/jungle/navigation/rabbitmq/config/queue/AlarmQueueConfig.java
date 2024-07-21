@@ -1,9 +1,9 @@
-package com.jungle.navigation.alarm.config.queue;
+package com.jungle.navigation.rabbitmq.config.queue;
 
-import static com.jungle.navigation.alarm.config.RMQProperties.ALARM_EXCHANGE_NAME;
-import static com.jungle.navigation.alarm.config.RMQProperties.ALARM_QUEUE_NAME;
-import static com.jungle.navigation.alarm.config.RMQProperties.ALARM_ROUTING_KEY;
-import static com.jungle.navigation.alarm.config.RMQProperties.DEAD_LETTER_EXCHANGE_NAME;
+import static com.jungle.navigation.rabbitmq.config.RMQProperties.ALARM_EXCHANGE_NAME;
+import static com.jungle.navigation.rabbitmq.config.RMQProperties.ALARM_QUEUE_NAME;
+import static com.jungle.navigation.rabbitmq.config.RMQProperties.ALARM_ROUTING_KEY;
+import static com.jungle.navigation.rabbitmq.config.RMQProperties.DEAD_LETTER_EXCHANGE_NAME;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

@@ -1,4 +1,4 @@
-package com.jungle.navigation.alarm.config;
+package com.jungle.navigation.rabbitmq.config;
 
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
