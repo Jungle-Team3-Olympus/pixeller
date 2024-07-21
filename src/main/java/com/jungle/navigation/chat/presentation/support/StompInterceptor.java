@@ -36,6 +36,7 @@ public class StompInterceptor implements ChannelInterceptor {
 	private void handleStompCommand(StompCommand stompCommand, StompHeaderAccessor accessor) {
 		switch (stompCommand) {
 			case CONNECT:
+				log.info("connect");
 				handleConnect(accessor);
 				break;
 			case SUBSCRIBE:
@@ -58,7 +59,6 @@ public class StompInterceptor implements ChannelInterceptor {
 
 	private void handleConnect(StompHeaderAccessor accessor) {
 		String authorizationHeader = accessor.getFirstNativeHeader(AUTHORIZATION);
-
 		MemberInfo memberInfo = tokenResolver.decode(authorizationHeader);
 
 		sessionManager.setValue(accessor, MEMBER_ID, memberInfo.getMemberId());
