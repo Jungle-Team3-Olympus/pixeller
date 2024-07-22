@@ -31,4 +31,11 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=pixeller
       - RABBITMQ_DEFAULT_PASS=pixeller
+  redis_container:
+    container_name: pixeller_redis
+    image: redis:latest
+    ports:
+      - "16379:6379"
+    environment:
+      - REDIS_PASSWORD=root
 
