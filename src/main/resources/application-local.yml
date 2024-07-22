@@ -52,3 +52,7 @@ logging:
   level:
     root: info
     com.example.rabbitmqdemo: DEBUG
+
+redis:
+  host: localhost
+  port : 16379
