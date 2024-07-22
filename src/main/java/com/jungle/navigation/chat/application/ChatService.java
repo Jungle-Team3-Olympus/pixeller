@@ -18,6 +18,7 @@ import com.jungle.navigation.chat.presentation.dto.response.MessageResponse;
 import com.jungle.navigation.chat.presentation.dto.response.ReadMessageResponse;
 import com.jungle.navigation.common.exception.BusinessException;
 import com.jungle.navigation.common.presentation.respnose.SliceResponse;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,10 +81,13 @@ public class ChatService {
 
 	private SliceResponse<EachMessage> getMessagesByRoom(Long roomId, int pageNumber, int pageSize) {
 		Slice<Message> messages = getMessagesByRoomId(roomId, pageNumber, pageSize);
+		List<Message> sortedMessage =
+				messages.stream().sorted(Comparator.comparing(Message::getSendTime)).toList();
+
 		Map<Long, String> sendersName = getSenderName(messages.getContent());
 
 		List<EachMessage> data =
-				messages.stream()
+				sortedMessage.stream()
 						.map(
 								message ->
 										new EachMessage(
@@ -98,7 +102,7 @@ public class ChatService {
 	}
 
 	private Slice<Message> getMessagesByRoomId(Long roomId, int pageNumber, int pageSize) {
-		Sort sort = Sort.by(Direction.ASC, "sendTime");
+		Sort sort = Sort.by(Direction.DESC, "sendTime");
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
 		return messageRepository.findAllByRoomId(roomId, pageable);
