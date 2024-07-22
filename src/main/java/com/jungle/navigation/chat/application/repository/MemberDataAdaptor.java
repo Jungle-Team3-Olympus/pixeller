@@ -17,7 +17,7 @@ public class MemberDataAdaptor {
 				memberRepository.findAllByMemberIdIn(getMemberIds(memberIds));
 
 		return memberEntities.stream()
-				.map(member -> MemberData.of(member.getMemberId(), member.getUsername()))
+				.map(member -> MemberData.of(member.getMemberId(), member.getId()))
 				.toList();
 	}
 
