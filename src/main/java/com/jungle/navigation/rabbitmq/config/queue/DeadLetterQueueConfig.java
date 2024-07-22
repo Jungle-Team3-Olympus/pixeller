@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DeadLetterQueueConfig {
 	private static final String ALARM = ".alarm";
+	private static final String CHAT = ".chat";
 
 	@Bean
 	Queue alarmDeadLetterQueue() {
@@ -32,5 +33,22 @@ public class DeadLetterQueueConfig {
 		return BindingBuilder.bind(alarmDeadLetterQueue())
 				.to(alarmDeadLetterExchange())
 				.with(DEAD_LETTER_ROUTING_KEY + ALARM);
+	}
+
+	@Bean
+	Queue chatDeadLetterQueue() {
+		return QueueBuilder.durable(DEAD_LETTER_QUEUE_NAME + CHAT).build();
+	}
+
+	@Bean
+	DirectExchange chatDeadLetterExchange() {
+		return ExchangeBuilder.directExchange(DEAD_LETTER_EXCHANGE_NAME + CHAT).build();
+	}
+
+	@Bean
+	Binding chatDeadLetterBinding() {
+		return BindingBuilder.bind(chatDeadLetterQueue())
+				.to(chatDeadLetterExchange())
+				.with(DEAD_LETTER_ROUTING_KEY + CHAT);
 	}
 }

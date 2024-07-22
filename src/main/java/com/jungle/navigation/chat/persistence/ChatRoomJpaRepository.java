@@ -22,11 +22,14 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoom, Long>, Ch
 	}
 
 	@Query(
-			"SELECT DISTINCT r "
-					+ "FROM RoomMember rm "
-					+ "JOIN ChatRoom r ON rm.chatRoomId = r.id "
+			"SELECT r "
+					+ "FROM ChatRoom r "
+					+ "JOIN RoomMember rm1 ON r.id = rm1.chatRoomId "
+					+ "JOIN RoomMember rm2 ON r.id = rm2.chatRoomId "
 					+ "WHERE r.roomType = :roomType "
-					+ "AND (rm.memberId = :senderId OR rm.memberId = :receiverId)")
+					+ "AND rm1.memberId = :senderId "
+					+ "AND rm2.memberId = :receiverId "
+					+ "AND rm1.memberId <> rm2.memberId")
 	ChatRoom findCommonChatRoom(
 			@Param("senderId") Long senderId,
 			@Param("receiverId") Long receiverId,
