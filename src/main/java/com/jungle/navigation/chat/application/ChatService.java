@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatService {
-	private static final int DIRECT_CHAT_ROOM_LIMIT = 2;
+	private static final int DIRECT_CHAT_ROOM_OPPOSITE_MEMBER_COUNT = 1;
 	private final ChatRoomRepository chatRoomRepository;
 	private final MessageRepository messageRepository;
 	private final RoomMemberRepository roomMemberRepository;
@@ -49,7 +49,7 @@ public class ChatService {
 			Long senderId, String senderName, Long roomId, SendMessageRequest request) {
 		validateExistChatRoom(roomId);
 		saveMessage(roomId, request, senderId);
-		RoomMember roomMember = getOppositeMemberId(roomId, senderId);
+		RoomMember roomMember = getDirectChatOppositeMemberId(roomId, senderId);
 
 		MessageResponse response = MessageResponse.of(roomId, senderName, request.content());
 
@@ -131,16 +131,19 @@ public class ChatService {
 		chatRoomRepository.validateById(roomId);
 	}
 
-	private RoomMember getOppositeMemberId(Long roomId, Long senderId) {
-		List<RoomMember> roomMembers =
-				roomMemberRepository.findAllByChatRoomId(roomId).stream()
-						.filter(roomMember -> roomMember.isOtherMember(senderId))
-						.toList();
+	private RoomMember getDirectChatOppositeMemberId(Long roomId, Long senderId) {
+		List<RoomMember> roomMembers = getOppositeMemberId(roomId, senderId);
 
-		if (roomMembers.size() != DIRECT_CHAT_ROOM_LIMIT) {
-			throw new BusinessException(String.format("%s chat room에 2명 이상의 유저가 있습니다.", roomId));
+		if (roomMembers.size() != DIRECT_CHAT_ROOM_OPPOSITE_MEMBER_COUNT) {
+			throw new BusinessException(String.format("%s direct chat room에 2명 이상의 유저가 있습니다.", roomId));
 		}
 
 		return roomMembers.get(0);
+	}
+
+	private List<RoomMember> getOppositeMemberId(Long roomId, Long senderId) {
+		return roomMemberRepository.findAllByChatRoomId(roomId).stream()
+				.filter(roomMember -> roomMember.isOtherMember(senderId))
+				.toList();
 	}
 }
