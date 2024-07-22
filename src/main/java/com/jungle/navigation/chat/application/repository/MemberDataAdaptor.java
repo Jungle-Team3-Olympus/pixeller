@@ -22,9 +22,9 @@ public class MemberDataAdaptor {
 	}
 
 	public String getMember(Long memberId) {
-		MemberEntity member = memberRepository.getById(Integer.valueOf(String.valueOf(memberId)));
+		MemberEntity member = memberRepository.getByMemberId(Integer.valueOf(String.valueOf(memberId)));
 
-		return member.getUsername();
+		return member.getId();
 	}
 
 	private List<Integer> getMemberIds(List<Long> memberIds) {

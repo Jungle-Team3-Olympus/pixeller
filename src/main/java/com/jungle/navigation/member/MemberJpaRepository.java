@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MemberJpaRepository extends JpaRepository<MemberEntity, Integer> {
 	List<MemberEntity> findAllByMemberIdIn(List<Integer> memberIds);
 
-	default MemberEntity getById(Integer memberId) {
+	default MemberEntity getByMemberId(Integer memberId) {
 		return findById(memberId).orElseThrow(() -> new BusinessException("존재하지 않는 멤버입니다."));
 	}
 }
