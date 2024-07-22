@@ -1,10 +1,6 @@
-package com.jungle.navigation.rabbitmq.config.queue;
+package com.jungle.navigation.external.rabbitmq.config.queue;
 
-import static com.jungle.navigation.rabbitmq.config.RMQProperties.ALARM_EXCHANGE_NAME;
-import static com.jungle.navigation.rabbitmq.config.RMQProperties.ALARM_QUEUE_NAME;
-import static com.jungle.navigation.rabbitmq.config.RMQProperties.ALARM_ROUTING_KEY;
-import static com.jungle.navigation.rabbitmq.config.RMQProperties.DEAD_LETTER_EXCHANGE_NAME;
-
+import com.jungle.navigation.external.rabbitmq.config.RMQProperties;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -22,20 +18,22 @@ public class AlarmQueueConfig {
 
 	@Bean
 	DirectExchange alarmExchange() {
-		return new DirectExchange(ALARM_EXCHANGE_NAME);
+		return new DirectExchange(RMQProperties.ALARM_EXCHANGE_NAME);
 	}
 
 	@Bean
 	Queue alarmQueue() {
-		return QueueBuilder.durable(ALARM_QUEUE_NAME)
-				.withArgument(X_DEAD_LETTER_EXCHANGE_KEY, DEAD_LETTER_EXCHANGE_NAME)
-				.withArgument(X_DEAD_LETTER_ROUTING_KEY, DEAD_LETTER_EXCHANGE_NAME + ".alarm")
+		return QueueBuilder.durable(RMQProperties.ALARM_QUEUE_NAME)
+				.withArgument(X_DEAD_LETTER_EXCHANGE_KEY, RMQProperties.DEAD_LETTER_EXCHANGE_NAME)
+				.withArgument(X_DEAD_LETTER_ROUTING_KEY, RMQProperties.DEAD_LETTER_EXCHANGE_NAME + ".alarm")
 				.withArgument(X_MESSAGE_TTL_KEY, X_MESSAGE_TTL)
 				.build();
 	}
 
 	@Bean
 	Binding alarmBinding() {
-		return BindingBuilder.bind(alarmQueue()).to(alarmExchange()).with(ALARM_ROUTING_KEY);
+		return BindingBuilder.bind(alarmQueue())
+				.to(alarmExchange())
+				.with(RMQProperties.ALARM_ROUTING_KEY);
 	}
 }

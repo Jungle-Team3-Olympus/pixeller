@@ -1,8 +1,8 @@
-package com.jungle.navigation.rabbitmq.config.queue;
+package com.jungle.navigation.external.rabbitmq.config.queue;
 
-import static com.jungle.navigation.rabbitmq.config.RMQProperties.DEAD_LETTER_EXCHANGE_NAME;
-import static com.jungle.navigation.rabbitmq.config.RMQProperties.DEAD_LETTER_QUEUE_NAME;
-import static com.jungle.navigation.rabbitmq.config.RMQProperties.DEAD_LETTER_ROUTING_KEY;
+import static com.jungle.navigation.external.rabbitmq.config.RMQProperties.DEAD_LETTER_EXCHANGE_NAME;
+import static com.jungle.navigation.external.rabbitmq.config.RMQProperties.DEAD_LETTER_QUEUE_NAME;
+import static com.jungle.navigation.external.rabbitmq.config.RMQProperties.DEAD_LETTER_ROUTING_KEY;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

@@ -1,4 +1,4 @@
-package com.jungle.navigation.rabbitmq.config;
+package com.jungle.navigation.external.rabbitmq.config;
 
 public interface RMQProperties {
 	String WAITING_EXCHANGE_NAME = "exchange.waiting";

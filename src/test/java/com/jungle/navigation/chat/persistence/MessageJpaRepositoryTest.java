@@ -1,7 +1,6 @@
 package com.jungle.navigation.chat.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.jungle.navigation.chat.persistence.entity.Message;
 import com.jungle.navigation.chat.persistence.entity.RoomMember;
@@ -21,7 +20,7 @@ import org.springframework.data.domain.Sort.Direction;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class AbstractMessageJpaRepositoryTest {
+class MessageJpaRepositoryTest {
 
 	@Autowired private MessageJpaRepository messageRepository;
 
