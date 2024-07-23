@@ -1,4 +1,4 @@
-package com.jungle.navigation.product.config;
+package com.jungle.navigation.external.s3;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
