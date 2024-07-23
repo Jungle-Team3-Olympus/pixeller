@@ -6,6 +6,10 @@ buildscript {
         asciidoctorVersion = '3.3.2'
         epagesRestDocsApiSpecVersion = '0.16.0'
         sonarqubeVersion = '4.4.1.3373'
+
+        asciidoctorVersion = '3.3.2'
+        epagesRestDocsApiSpecVersion = '0.16.0'
+        swaggerUIVersion = '4.11.1'
     }
 }
 
@@ -22,6 +26,8 @@ plugins {
 
     id "org.sonarqube" version "${sonarqubeVersion}"
     id 'jacoco'
+
+    id 'org.hidetake.swagger.generator' version '2.18.2'
 }
 
 group = 'com.jungle'
@@ -49,9 +55,7 @@ ext {
 
 /** apply tasks */
 apply from: './tasks/formatting-task.gradle'
-apply from: './tasks/code-quality-task.gradle'
 apply from: './tasks/docs-task.gradle'
-apply from: './tasks/install-git-hooks.gradle'
 apply from: './tasks/integration-test.gradle'
 
 dependencies {
@@ -61,17 +65,42 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // datbase
+    // database
     runtimeOnly 'com.mysql:mysql-connector-j'
-    implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-mysql'
+
+    // orm
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    testImplementation 'io.rest-assured:rest-assured'
+
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // swagger
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation "com.epages:restdocs-api-spec-mockmvc:${epagesRestDocsApiSpecVersion}"
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+    // slack
+    implementation 'com.slack.api:slack-api-client:1.29.0'
+
+    // aws
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
+
+    // rabbit mq
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
 }
 
 tasks.named('test') {

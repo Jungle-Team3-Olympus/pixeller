@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   demo-mysql:
-    container_name: board-mysql8
+    container_name: navigation-mysql8
     image: mysql/mysql-server:8.0.27
     environment:
       - MYSQL_ROOT_PASSWORD=root
@@ -14,7 +14,7 @@ services:
       - ./mysql-init.d:/docker-entrypoint-initdb.d
 
   demo-adminer: # mysql web admin
-    container_name: board-adminer
+    container_name: navigation-adminer
     image: adminer:4
     ports:
       - "18080:8080"
@@ -22,4 +22,13 @@ services:
       - ADMINER_DEFAULT_SERVER=demo-mysql8
       - ADMINER_DESIGN=nette
       - ADMINER_PLUGINS=tables-filter tinymce
+  rabbitmq_container:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq_container
+    ports:
+      - "35672:5672"
+      - "45672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=pixeller
+      - RABBITMQ_DEFAULT_PASS=pixeller
 

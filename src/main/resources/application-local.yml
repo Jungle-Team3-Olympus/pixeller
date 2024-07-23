@@ -1,0 +1,54 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:mysql://localhost:13306/navigation_jungle?useSSL=false&serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    generate-ddl: false
+    open-in-view: false
+  rabbitmq:
+    host: localhost
+    port: 35672
+    username: pixeller
+    password: pixeller
+    stream:
+      virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+cors:
+  allow-origin:
+    urls: ${CORS_URL}
+jwt:
+  secretKey: ${JWT_SECRET}
+
+slack:
+  webhook:
+    url: https://fakeslackurl
+
+cloud:
+  aws:
+    region: ap-northeast-2
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+  s3:
+    bucket: ${BUCKET_NAME}
+  stack:
+    auto:
+
+logging:
+  level:
+    root: info
+    com.example.rabbitmqdemo: DEBUG
