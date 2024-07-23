@@ -12,4 +12,8 @@ public interface ChatRoomRepository {
 	ChatRoom findCommonChatRoom(Long senderId, Long receiverId, RoomType roomType);
 
 	void validateById(Long id);
+
+	Long getLock(String key, int timeoutSeconds);
+
+	void releaseLock(String key);
 }
