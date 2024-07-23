@@ -1,5 +1,6 @@
 package com.jungle.navigation.product.entity;
 
+import com.jungle.navigation.product.dto.RequestProductDto;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductEntity {
+	private static final char NOT_USE = 'n';
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +49,16 @@ public class ProductEntity {
 	@Column(name = "use_yn")
 	private char useYn = 'y';
 
-	public void setMemberId(Long memberId) {
-		this.memberId = Math.toIntExact(memberId);
+	public static ProductEntity of(RequestProductDto request, Long memberId) {
+		return ProductEntity.builder()
+				.memberId(Math.toIntExact(memberId))
+				.name(request.name())
+				.price(request.price())
+				.description(request.description())
+				.build();
+	}
+
+	public void delete() {
+		this.useYn = NOT_USE;
 	}
 }
