@@ -2,6 +2,7 @@ package com.jungle.navigation.auth.presentation.support;
 
 import static com.jungle.navigation.auth.presentation.support.AuthConstants.PREFIX;
 
+import com.jungle.navigation.common.exception.BusinessException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -13,9 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Component
+@Primary
 public class HeaderTokenResolver implements TokenResolver {
 	private static final int TOKEN_INDEX = 1;
 	private static final int INVALID_VALUE_SIZE = 2;
@@ -39,13 +42,13 @@ public class HeaderTokenResolver implements TokenResolver {
 		try {
 			return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
 		} catch (MalformedJwtException e) {
-			throw new IllegalArgumentException("Invalid JWT Token", e);
+			throw new BusinessException("Invalid JWT Token" + e.getMessage());
 		} catch (ExpiredJwtException e) {
-			throw new IllegalArgumentException("Expired JWT Token", e);
+			throw new BusinessException("Expired JWT Token" + e.getMessage());
 		} catch (UnsupportedJwtException e) {
-			throw new IllegalArgumentException("Unsupported JWT Token", e);
+			throw new BusinessException("Unsupported JWT Token" + e.getMessage());
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("JWT claims string is empty.", e);
+			throw new BusinessException("JWT claims string is empty." + e.getMessage());
 		}
 	}
 
