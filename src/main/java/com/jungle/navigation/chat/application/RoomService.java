@@ -12,7 +12,6 @@ import com.jungle.navigation.chat.persistence.entity.Message;
 import com.jungle.navigation.chat.persistence.entity.RoomMember;
 import com.jungle.navigation.chat.persistence.entity.RoomType;
 import com.jungle.navigation.chat.presentation.dto.response.GetChatRoomsResponse;
-import com.jungle.navigation.chat.presentation.dto.response.RoomResponse;
 import com.jungle.navigation.common.presentation.respnose.SliceResponse;
 import java.util.List;
 import java.util.Map;
@@ -37,16 +36,12 @@ public class RoomService {
 	private final MessagePublisher messagePublisher;
 
 	@Transactional
-	public RoomResponse createDirectRoom(Long senderId, Long oppositeId) {
-		ChatRoom commonChatRoom =
-				chatRoomRepository.findCommonChatRoom(senderId, oppositeId, RoomType.DIRECT);
+	public Long createDirectRoom(Long senderId, Long oppositeId) {
+		ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.of(RoomType.DIRECT));
+		roomMemberRepository.save(RoomMember.of(senderId, chatRoom.getId()));
+		roomMemberRepository.save(RoomMember.of(oppositeId, chatRoom.getId()));
 
-		if (commonChatRoom == null) {
-			Long chatRoomId = createNewChatRoom(senderId, oppositeId);
-			return RoomResponse.of(chatRoomId);
-		}
-
-		return RoomResponse.of(commonChatRoom.getId());
+		return chatRoom.getId();
 	}
 
 	public void getChatRooms(Long memberId, int page, int size) {
@@ -74,14 +69,6 @@ public class RoomService {
 						messages.isLast());
 
 		messagePublisher.send(getChatRoomsDestination(memberId), sliceResponse);
-	}
-
-	private Long createNewChatRoom(Long senderId, Long oppositeId) {
-		ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.of(RoomType.DIRECT));
-		roomMemberRepository.save(RoomMember.of(senderId, chatRoom.getId()));
-		roomMemberRepository.save(RoomMember.of(oppositeId, chatRoom.getId()));
-
-		return chatRoom.getId();
 	}
 
 	private Map<Long, String> getOppositeName(List<Message> messages, Long memberId) {
