@@ -2,7 +2,6 @@ package com.jungle.navigation.chat.presentation;
 
 import com.jungle.navigation.auth.presentation.support.Member;
 import com.jungle.navigation.auth.presentation.support.MemberInfo;
-import com.jungle.navigation.chat.application.FacadeRoomService;
 import com.jungle.navigation.chat.application.RoomService;
 import com.jungle.navigation.chat.presentation.docs.RoomApi;
 import com.jungle.navigation.chat.presentation.dto.request.GetPagesRequest;
@@ -26,15 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class RoomController implements RoomApi {
 
-	private final FacadeRoomService facadeRoomService;
 	private final RoomService roomService;
 
 	@Override
 	@PostMapping("/chat-room/opposite/{oppositeId}")
 	public ApiResponse<SuccessBody<RoomResponse>> joinDirectRoom(
 			@Member MemberInfo memberInfo, @PathVariable("oppositeId") Long oppositeId) {
-		RoomResponse response =
-				facadeRoomService.createDirectRoom(memberInfo.getMemberId(), oppositeId);
+		RoomResponse response = roomService.createDirectRoom(memberInfo.getMemberId(), oppositeId);
 
 		return ApiResponseGenerator.success(
 				response, HttpStatus.OK, RoomSuccessMessageCode.CREATE_ROOM);
