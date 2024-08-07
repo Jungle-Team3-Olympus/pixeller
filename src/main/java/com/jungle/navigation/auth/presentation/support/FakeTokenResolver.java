@@ -1,9 +1,11 @@
 package com.jungle.navigation.auth.presentation.support;
 
 import java.util.Arrays;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("test")
 public class FakeTokenResolver implements TokenResolver {
 	private static final int TOKEN_INDEX = 1;
 
