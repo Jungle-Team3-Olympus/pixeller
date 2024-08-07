@@ -34,7 +34,10 @@ public class ChatRoom {
 	@Column(name = "room_type", nullable = false)
 	private RoomType roomType;
 
-	public static ChatRoom of(RoomType roomType) {
-		return ChatRoom.builder().roomType(roomType).build();
+	@Column(unique = true, nullable = false)
+	private String roomUUID;
+
+	public static ChatRoom of(RoomType roomType, String roomUUID) {
+		return ChatRoom.builder().roomType(roomType).roomUUID(roomUUID).build();
 	}
 }
