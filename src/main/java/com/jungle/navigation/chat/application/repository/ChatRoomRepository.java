@@ -13,7 +13,5 @@ public interface ChatRoomRepository {
 
 	void validateById(Long id);
 
-	Long getLock(String key, int timeoutSeconds);
-
-	void releaseLock(String key);
+	ChatRoom findByRoomUUID(String roomUUID);
 }

@@ -35,9 +35,5 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoom, Long>, Ch
 			@Param("receiverId") Long receiverId,
 			@Param("roomType") RoomType roomType);
 
-	@Query(value = "select GET_LOCK(:key, :timeoutSeconds)", nativeQuery = true)
-	Long getLock(String key, int timeoutSeconds);
-
-	@Query(value = "select RELEASE_LOCK(:key)", nativeQuery = true)
-	void releaseLock(String key);
+	ChatRoom findByRoomUUID(String uuid);
 }
