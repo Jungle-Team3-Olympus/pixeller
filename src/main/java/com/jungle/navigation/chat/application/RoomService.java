@@ -12,10 +12,12 @@ import com.jungle.navigation.chat.persistence.entity.Message;
 import com.jungle.navigation.chat.persistence.entity.RoomMember;
 import com.jungle.navigation.chat.persistence.entity.RoomType;
 import com.jungle.navigation.chat.presentation.dto.response.GetChatRoomsResponse;
+import com.jungle.navigation.chat.presentation.dto.response.RoomResponse;
 import com.jungle.navigation.common.presentation.respnose.SliceResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -36,12 +38,16 @@ public class RoomService {
 	private final MessagePublisher messagePublisher;
 
 	@Transactional
-	public Long createDirectRoom(Long senderId, Long oppositeId) {
-		ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.of(RoomType.DIRECT));
-		roomMemberRepository.save(RoomMember.of(senderId, chatRoom.getId()));
-		roomMemberRepository.save(RoomMember.of(oppositeId, chatRoom.getId()));
+	public RoomResponse createDirectRoom(Long senderId, Long oppositeId) {
+		String roomUUID = getRoomUUID(senderId, oppositeId);
+		ChatRoom commonChatRoom = chatRoomRepository.findByRoomUUID(roomUUID);
 
-		return chatRoom.getId();
+		if (commonChatRoom != null) {
+			return RoomResponse.of(commonChatRoom.getId());
+		}
+
+		Long savedRoomId = saveChatRoom(senderId, oppositeId);
+		return RoomResponse.of(savedRoomId);
 	}
 
 	public void getChatRooms(Long memberId, int page, int size) {
@@ -94,5 +100,19 @@ public class RoomService {
 				.collect(
 						Collectors.toMap(
 								Entry::getKey, entry -> memberDataAdaptor.getMember(entry.getValue())));
+	}
+
+	private Long saveChatRoom(Long senderId, Long oppositeId) {
+		ChatRoom chatRoom =
+				chatRoomRepository.save(ChatRoom.of(RoomType.DIRECT, getRoomUUID(senderId, oppositeId)));
+		roomMemberRepository.save(RoomMember.of(senderId, chatRoom.getId()));
+		roomMemberRepository.save(RoomMember.of(oppositeId, chatRoom.getId()));
+
+		return chatRoom.getId();
+	}
+
+	private String getRoomUUID(Long senderId, Long oppositeId) {
+		String combinedString = Math.min(senderId, oppositeId) + "_" + Math.max(senderId, oppositeId);
+		return UUID.nameUUIDFromBytes(combinedString.getBytes()).toString();
 	}
 }

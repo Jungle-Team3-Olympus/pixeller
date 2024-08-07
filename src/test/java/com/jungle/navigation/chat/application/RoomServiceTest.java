@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class RoomServiceTest {
 
-	@Autowired private FacadeRoomService facadeRoomService;
+	@Autowired private RoomService roomService;
 
 	@Autowired private ChatRoomRepository chatRoomRepository;
 
@@ -40,7 +40,7 @@ class RoomServiceTest {
 			executorService.submit(
 					() -> {
 						try {
-							RoomResponse response = facadeRoomService.createDirectRoom(senderId, oppositeId);
+							RoomResponse response = roomService.createDirectRoom(senderId, oppositeId);
 							createdRoomIds.add(response.roomId());
 						} catch (Exception e) {
 							System.out.println(e.getMessage());
